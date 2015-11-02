@@ -53,11 +53,12 @@ class MyDB{
 		}
 	}
 
-	public function q( $table, $where=null, $limit=null, $fields=null ){
-		$query = "SELECT ";
+	// Short command for "SELECT [$fields|*] $where $limit"
+	public function q( $table, $where=NULL, $limit=NULL, $fields=NULL ){
+		$query	= "SELECT ";
+		$table	= $this->prepareTable( $table );
 		
 		if ( $fields ){
-			
 			if ( is_array( $fields ) ){
 				$fields = implode( ', ', $fields );
 			}
@@ -68,9 +69,7 @@ class MyDB{
 			$fields = '*';
 		}
 		
-		$query	.= $fields." FROM $table";
-		
-		$query	.= $this->whereForQuery( $where );
+		$query	.= $fields." FROM " . $table . $this->whereForQuery( $where );
 		
 		if ( $limit && is_numeric( $limit ) ){
 			$query .= " LIMIT $limit";
@@ -95,8 +94,8 @@ class MyDB{
 			
 			$w[] = "`$key`$val";
 		}
-		$where = implode( ' AND ', $w );
 		
+		$where = implode( ' AND ', $w );
 		
 		return " WHERE $where";
 	}
@@ -116,19 +115,22 @@ class MyDB{
 		
 		$arresult = array(
 			'query'	=> $query,
-			'row'		=> $this->mylink->affected_rows,
+			'rows'	=> $this->mylink->affected_rows,
 			'time'	=> $this->getTimer()
 		);
+		
 		return $arresult;
 	}
 
 	protected function prepareTable( $table ){
-		if( strpos( "`", $table) === FALSE )	return "`$table`";
+		if( FALSE === strpos( "`", $table) ){
+			return "`$table`";
+		}
 
 		return $table;
 	}
 	
-	public function delete( $table, $where=null, $limit=null ){
+	public function delete( $table, $where=NULL, $limit=NULL ){
 		$query = "DELETE FROM " . $this->prepareTable( $table );
 		
 		if ( $where ){
@@ -158,23 +160,27 @@ class MyDB{
 		
 		$arresult['src']	= $this->mylink->query( $query );
 		
-		if( ! $arresult['src'] )			return $arresult;
+		if( ! $arresult['src'] ){
+			return $arresult;
+		}
 		
 		$arresult['rows'] = $arresult['src']->num_rows;
 		
-		if( $arresult['rows'] <= 1000 && !$direct ){
-			$arresult['data']			= array();
-			$arresult['isArray']	= TRUE;
-
-			while ( $row = $arresult['src']->fetch_assoc() ){
-				$arresult['data'][] = $this->SQLfrom( $row );
-			}
-			
-			$arresult['src']->free();
-			$arresult['src']	= NULL;
+		if( $arresult['rows'] > 1000 || $direct ){
+			$arresult['time']	= $this->getTimer();
+			return $arresult;
 		}
 		
 		
+		$arresult['data']			= array();
+		$arresult['isArray']	= TRUE;
+
+		while ( $row = $arresult['src']->fetch_assoc() ){
+			$arresult['data'][] = $this->SQLfrom( $row );
+		}
+
+		$arresult['src']->free();
+		$arresult['src']	= NULL;
 		$arresult['time']	= $this->getTimer();
 		
 		return $arresult;
@@ -187,8 +193,10 @@ class MyDB{
 		return $timer;
 	}
 
-	public function update( $table, $data, $where=null, $limit=null ){
-		if ( !is_array( $data ) ) return null;
+	public function update( $table, $data, $where=NULL, $limit=NULL ){
+		if ( !is_array( $data ) ){
+			return NULL;
+		}
 		
 		$this->timer	= microtime( TRUE );
 		
@@ -203,14 +211,14 @@ class MyDB{
 
 		$table	= $this->prepareTable( $table );
 		
-		$query = "UPDATE $table SET ".implode( ", ", $query );
+		$query = "UPDATE {$table} SET ".implode( ", ", $query );
 		
 		if ( $where ){
-			$query .= " WHERE $where";
+			$query .= ' WHERE ' . $where;
 		}
 		
 		if ( $limit ){
-			$query .= " LIMIT $limit";
+			$query .= ' LIMIT ' . $limit;
 		}
 
 		return $this->execute( $query, $data['vals'] );
@@ -222,7 +230,9 @@ class MyDB{
 	}
 
 	public function insert( $table, $data ){
-		if ( !is_array( $data ) ) return null;
+		if ( !is_array( $data ) ){
+			return NULL;
+		}
 		
 		$this->timer	= microtime( TRUE );
 		
