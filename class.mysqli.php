@@ -1,18 +1,22 @@
 <?php
 class MyDB{
-	public $setUTF8 = true;
+	public $setUTF8 = TRUE;
+	
+	// Forbidden words for values
+	public $forbidden = array( 'SELECT', 'UPDATE', 'REPLACE', 'INSERT', 'DELETE', 'DROP' );
 	public $mylink;
 
-	protected $security	= true;
+	protected $security	= TRUE;
 	protected $badsql		= array();
 	protected $timer		= 0;
 			
-	function __construct( $connect, $security=true ){
+	function __construct( $connect, $security=TRUE ){
 		$this->connect( $connect, $security );
 	}
 	
-	public function connect( $connect, $security=true ){
+	public function connect( $connect, $security=TRUE ){
 		$this->security = $security;
+		
 		if( !$connect['password'] && $connect['pass'] ){
 			$connect['password'] = $connect['pass'];
 		}
@@ -23,7 +27,9 @@ class MyDB{
 			die('Connect Error (' .$this->mylink->connect_errno . ') '. $this->mylink->connect_error);
 		}
 		
-		if ( $this->setUTF8 ) $this->mylink->query('SET NAMES utf8');
+		if ( $this->setUTF8 ){
+			$this->mylink->query('SET NAMES utf8');
+		}
 		
 		$this->sqlinit();
 	}
@@ -33,9 +39,7 @@ class MyDB{
 	}
 
 	protected function sqlinit(){
-		$forbidden = array( 'SELECT', 'UPDATE', 'REPLACE', 'INSERT', 'DELETE', 'DROP' );
-		
-		foreach ( $forbidden as $key ){
+		foreach ( $this->forbidden as $key ){
 			$length	= strlen( $key );
 			$sql		= preg_split('//', $key, -1, PREG_SPLIT_NO_EMPTY);
 			$value	= '';
