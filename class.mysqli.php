@@ -55,7 +55,7 @@ class MyDB{
 
 	// Short command for "SELECT [$fields|*] $where $limit"
 	public function q( $table, $where=NULL, $limit=NULL, $fields=NULL ){
-		$query	= "SELECT ";
+		$query	= 'SELECT ';
 		$table	= $this->prepareTable( $table );
 		
 		if ( $fields ){
@@ -69,10 +69,15 @@ class MyDB{
 			$fields = '*';
 		}
 		
-		$query	.= $fields." FROM " . $table . $this->whereForQuery( $where );
+		$query	.= $fields . ' FROM ' . $table . $this->whereForQuery( $where );
 		
-		if ( $limit && is_numeric( $limit ) ){
-			$query .= " LIMIT $limit";
+		if ( $limit ){
+			if( is_array( $limit ) ){
+				$query	.= ' LIMIT ' . intval( $limit[0] ) . ',' . intval( $limit[1] );
+			}
+			elseif( is_numeric( $query ) ){
+				$query .= ' LIMIT ' . $limit;
+			}
 		}
 		
 		return $this->select( $query );
@@ -97,7 +102,7 @@ class MyDB{
 		
 		$where = implode( ' AND ', $w );
 		
-		return " WHERE $where";
+		return ' WHERE ' . $where;
 	}
 
 	public function query( $query, $direct=FALSE ){
@@ -123,22 +128,22 @@ class MyDB{
 	}
 
 	protected function prepareTable( $table ){
-		if( FALSE === strpos( "`", $table) ){
-			return "`$table`";
+		if( FALSE === strpos( '`', $table) ){
+			return "`{$table}`";
 		}
 
 		return $table;
 	}
 	
 	public function delete( $table, $where=NULL, $limit=NULL ){
-		$query = "DELETE FROM " . $this->prepareTable( $table );
+		$query = 'DELETE FROM ' . $this->prepareTable( $table );
 		
 		if ( $where ){
-			$query .= " WHERE $where";
+			$query .= ' WHERE ' . $where;
 		}
 		
 		if ( $limit ){
-			$query .= " LIMIT $limit";
+			$query .= ' LIMIT ' . $limit;
 		}
 		
 		return $this->query( $query );
@@ -206,12 +211,12 @@ class MyDB{
 		$query = array();
 		
 		foreach ( $data['keys'] as $key ){
-			$query[] = "`$key`=?";
+			$query[] = "`{$key}`=?";
 		}
 
 		$table	= $this->prepareTable( $table );
 		
-		$query = "UPDATE {$table} SET ".implode( ", ", $query );
+		$query = "UPDATE {$table} SET " . implode( ', ', $query );
 		
 		if ( $where ){
 			$query .= ' WHERE ' . $where;
@@ -225,7 +230,7 @@ class MyDB{
 	}
 	
 	public function updateById( $table, $data, $id, $limit=NULL ){
-		$where	= "`id`='$id'";
+		$where	= "`id`='{$id}'";
 		return $this->update( $table, $data, $where, $limit );
 	}
 
@@ -240,7 +245,9 @@ class MyDB{
 		$table	= $this->prepareTable( $table );
 		
 		// create INSERT query
-		$query = "INSERT INTO $table (`".implode( '`,`', $data['keys'] )."`) VALUES (".implode( ',', $data['query'] ).")";
+		$query	= "INSERT INTO {$table} (`" . implode( '`,`', $data['keys'] ) ."`) "
+							. "VALUES (" . implode( ',', $data['query'] ) . ")";
+		
 		return $this->execute( $query, $data['vals'] );
 	}
 
@@ -248,7 +255,7 @@ class MyDB{
 		$fields	= array_keys( $data );
 		$vals		= array_values( $data );
 		$types	= '';
-		$query	= array();
+		$query	= $matches	= array();
 		
 		foreach ( $vals as $i=>$d ){
 			
@@ -268,8 +275,8 @@ class MyDB{
 				$vals[ $i ]	= htmlentities( $vals[ $i ], ENT_QUOTES | ENT_HTML5, "UTF-8" );
 			}
 			
-			$vals[$i]	= $this->SQLto( $vals[$i] );
-			$query[]	= '?';
+			$vals[ $i ]	= $this->SQLto( $vals[ $i ] );
+			$query[]		= '?';
 		}
 		
 		array_unshift( $vals, $types );
@@ -280,6 +287,7 @@ class MyDB{
 			'types'	=> $types,
 			'query'	=> $query
 		);
+		
 		return $data;
 	}
 
@@ -287,6 +295,7 @@ class MyDB{
 		$arresult = array( 'query' => $query, 'values'=>$vals, 'time' => 0, 'rows' => 0 );
 		
 		$stmt = $this->mylink->prepare( $query );
+		
 		if( ! $stmt ){
 			return $arresult;
 		}
@@ -309,19 +318,19 @@ class MyDB{
 
 	protected function refValues( $arr ){
 		if ( strnatcmp( phpversion(), '5.3' ) >= 0 ){
-			//Если версия PHP >=5.3 (в младших версиях все проще)
 			$refs = array();
 			
-			foreach( $arr as $key => $value) {
-				$refs[$key] = &$arr[$key]; //Массиву $refs присваиваются ссылки на значения массива $arr
+			foreach( $arr as $key => $value ) {
+				$refs[$key] = &$arr[ $key ];
 			}
 			
-			return $refs; //Массиву $arr присваиваются значения массива $refs
+			return $refs;
 		}
-		return $arr; //Возвращается массив $arr
+		
+		return $arr;
 	}
 
-	// функция защиты не имеет!!!
+	// Warning: This unsafe function !!!
 	public function multiQuery( $query ){
 		$this->timer	=  microtime( TRUE );
 		
@@ -344,15 +353,16 @@ class MyDB{
 		do {
 			/* store first result set */
 			$result = $this->mylink->store_result();
-
-			if ( $result ){
-				
-				while( $row = $result->fetch_assoc() ){
-					$data['data'][ $i ][] = $row;
-				}
-				
-				$result->free();
+			
+			if( ! $result ){
+				break;
 			}
+
+			while( $row = $result->fetch_assoc() ){
+				$data['data'][ $i ][] = $row;
+			}
+
+			$result->free();
 			
 			if ( ! $this->mylink->more_results() ){
 				break;
@@ -364,27 +374,29 @@ class MyDB{
 
 		return $data;
 	}
-
-	protected function SQLto( $query, $force=false ){ //$force - проверять всё, даже первую команду. Хорошо для self::insert()
+	
+	//$force - check all, even first sql-command.
+	//Very good for self::insert()
+	protected function SQLto( $query, $force=FALSE ){ 
 		$sql	= array_keys( $this->badsql['into'] );
 		$re		= implode( '|', $sql );
 		$re		= "#^($re)(.+)$#mis";
 		
+		$matches	= array();
+		
 		if ( preg_match( $re, $query, $matches ) ){
-			
-			foreach ( $sql as $s ){
-				
-				if ( $force ){
-					$matches[1] = str_ireplace( $s, $this->badsql['into'][$s], $matches[1] );
-				}
-				
-				$matches[2] = str_ireplace( $s, $this->badsql['into'][$s], $matches[2] );
-			}
-			
-			return $matches[1] . $matches[2];
+			return $query;
 		}
 		
-		return $query;
+		foreach ( $sql as $s ){
+			if ( $force ){
+				$matches[1] = str_ireplace( $s, $this->badsql['into'][ $s ], $matches[1] );
+			}
+
+			$matches[2] = str_ireplace( $s, $this->badsql['into'][ $s ], $matches[2] );
+		}
+
+		return $matches[1] . $matches[2];
 	}
 	
 	protected function SQLfrom( $row ){
@@ -406,13 +418,22 @@ class MyDB{
 	}
 
 	public static function normalDate( $mysqldate ){
-		if ( is_numeric( $mysqldate ) ) return $mysqldate;
+		if ( is_numeric( $mysqldate ) ){
+			return $mysqldate;
+		}
+		
 		return strtotime( $mysqldate );
 	}
 
 	public static function mysqlDate( $unixdate=null ){
-		if ( !$unixdate ) $unixdate = time();
-		if ( !is_numeric( $unixdate ) ) return $unixdate;
+		if ( !$unixdate ){
+			$unixdate = time();
+		}
+		
+		if ( !is_numeric( $unixdate ) ){
+			return $unixdate;
+		}
+		
 		return date( 'Y-m-d H:i:s', $unixdate );
 	}
 }
