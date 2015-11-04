@@ -1,5 +1,7 @@
 <?php
 class MyDB{
+	public $version	= '2015-11-04';
+	
 	public $setUTF8 = TRUE;
 	
 	// Forbidden words for values
