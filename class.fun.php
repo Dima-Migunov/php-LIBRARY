@@ -394,5 +394,34 @@ class Fun {
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 	}
+	
+	// Function to get the client IP address
+	static function get_client_ip() {
+		if ( $_SERVER['HTTP_CLIENT_IP'] ){
+			return $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+		}
+		
+		if( $_SERVER['HTTP_X_FORWARDED_FOR'] ){
+			return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}
+		
+		if( $_SERVER['HTTP_X_FORWARDED'] ){
+			return $_SERVER['HTTP_X_FORWARDED'];
+		}
+		
+		if( $_SERVER['HTTP_FORWARDED_FOR'] ){
+			return $_SERVER['HTTP_FORWARDED_FOR'];
+		}
+		
+		if( $_SERVER['HTTP_FORWARDED'] ){
+			return $_SERVER['HTTP_FORWARDED'];
+		}
+		
+		if( $_SERVER['REMOTE_ADDR'] ){
+			return $_SERVER['REMOTE_ADDR'];
+		}
+		
+		return NULL;
+	}
 
 }
