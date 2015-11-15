@@ -185,6 +185,10 @@ class MyDB{
 		while ( $row = $arresult['src']->fetch_assoc() ){
 			$arresult['data'][] = $this->SQLfrom( $row );
 		}
+		
+		if( 1 == $arresult['rows'] && isset( $arresult['data'][0]['id'] ) ){
+			$arresult['id']	= $arresult['data'][0]['id'];
+		}
 
 		$arresult['src']->free();
 		$arresult['src']	= NULL;
