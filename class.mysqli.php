@@ -390,7 +390,7 @@ class MyDB{
 		
 		$matches	= array();
 		
-		if ( preg_match( $re, $query, $matches ) ){
+		if ( ! preg_match( $re, $query, $matches ) ){
 			return $query;
 		}
 		
