@@ -277,8 +277,8 @@ class MyDB{
 				$types .= 's';
 			}
 
-			if( 's' == $types ){
-				$vals[ $i ]	= htmlentities( $vals[ $i ], ENT_QUOTES | ENT_HTML5, "UTF-8" );
+			if( 's' == $types && $this->security ){
+				$vals[ $i ]	= $this->strEncode( $vals[ $i ] );
 			}
 			
 			$vals[ $i ]	= $this->SQLto( $vals[ $i ] );
@@ -295,6 +295,14 @@ class MyDB{
 		);
 		
 		return $data;
+	}
+	
+	public function strEncode( $str ){
+		return urlencode( $str );
+	}
+	
+	public function strDecode( $str ){
+		return urldecode( $str );
 	}
 
 	protected function execute( $query, $vals ){
