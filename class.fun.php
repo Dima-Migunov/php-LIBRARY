@@ -424,4 +424,23 @@ class Fun {
 		return NULL;
 	}
 
+	public static function dateMysqlToUnix( $mysqldate ){
+		if ( is_numeric( $mysqldate ) ){
+			return $mysqldate;
+		}
+		
+		return strtotime( $mysqldate );
+	}
+	
+	public static function dateUnixToMysql( $unixdate ){
+		if ( !$unixdate ){
+			$unixdate = time();
+		}
+		
+		if ( !is_numeric( $unixdate ) ){
+			return $unixdate;
+		}
+		
+		return date( 'Y-m-d H:i:s', $unixdate );
+	}
 }
