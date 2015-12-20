@@ -1,6 +1,6 @@
 <?php
 class MyDB{
-	public $version	= '2015-11-04';
+	public $version	= '2015-12-20';
 	
 	public $setUTF8 = TRUE;
 	
@@ -183,7 +183,7 @@ class MyDB{
 		$arresult['isArray']	= TRUE;
 
 		while ( $row = $arresult['src']->fetch_assoc() ){
-			$arresult['data'][] = $this->SQLfrom( $row );
+			$arresult['data'][] = $this->parseRow( $row );
 		}
 		
 		if( 1 == $arresult['rows'] && isset( $arresult['data'][0]['id'] ) ){
@@ -197,6 +197,25 @@ class MyDB{
 		return $arresult;
 	}
 	
+	protected function parseRow( $row ){
+		$row	= $this->SQLfrom( $row );
+
+		if( ! $this->security ){
+			return $row;
+		}
+		
+		foreach ( $row as $key => $value ) {
+			if( is_numeric( $value ) ){
+				continue;
+			}
+			
+			$row[ $key ]	= $this->strDecode( $value );
+		}
+		
+		return $row;
+	}
+
+
 	protected function getTimer(){
 		$timer				= microtime( TRUE ) - $this->timer;
 		$this->timer	= 0;
