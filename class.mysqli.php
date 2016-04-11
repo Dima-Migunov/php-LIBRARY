@@ -469,4 +469,13 @@ class MyDB{
 		
 		return date( 'Y-m-d H:i:s', $unixdate );
 	}
+  
+  public function setSecurity( $mode ){
+    if( ! $mode ){
+      $this->security = FALSE;
+      return;
+    }
+    
+    $this->security = TRUE;
+  }
 }
