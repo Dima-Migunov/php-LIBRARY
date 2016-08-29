@@ -1,7 +1,7 @@
 <?php
 
 class Fun {
-	static $version	= '2015-11-04';
+	static $version	= '2016-08-29';
 
 	// Checkers
 	static function checkEmail( $email ) {
@@ -293,7 +293,7 @@ class Fun {
 	}
 
 	// unique row in 41 symbols (32 symbols if $sha1=FALSE)
-	static function idhash( $secret=NULL, $sha1=TRUE ) {
+	static function idhash( $secret='', $sha1=TRUE ) {
 		$secret .= date( 'r' ) . uniqid( strval( mt_rand() ), TRUE );
 
 		if ( $sha1 ){
