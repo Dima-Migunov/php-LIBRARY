@@ -188,9 +188,13 @@ class Fun {
 	}
 
 	// output in JSON
-	static function echoJSON( $data ) {
+	static function echoJSON( $data, $exit=TRUE ) {
 		header( 'Content-type: application/json' );
-		echo json_encode( $data );
+    $data = json_encode( $data );
+    
+    if( $exit ) exit( $data );
+		
+    echo $data;
 	}
 
 	// output in TEXT
@@ -339,7 +343,7 @@ class Fun {
 	static function myHost() {
 		$host = 'http';
 
-		if ( $_SERVER['HTTPS'] && 'off' != $_SERVER['HTTPS'] ) {
+		if ( $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off' ) {
 			$host .= 's';
 		}
 
