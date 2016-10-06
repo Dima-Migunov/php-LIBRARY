@@ -1,7 +1,9 @@
 <?php
+class FUN extends FunCore{}
 
-class Fun {
-	static $version	= '2016-08-29';
+
+class FunCore {
+	static $version	= '2016-10-06';
 
 	// Checkers
 	static function checkEmail( $email ) {
