@@ -218,7 +218,11 @@ class FunCore {
 		mail( $to, $subject, $body, $headers );
 	}
 
-	static function redirect( $url='/' ) {
+	static function redirect( $url='/', $permanent=FALSE ) {
+    if( $permanent ){
+      header("HTTP/1.1 301 Moved Permanently");
+    }
+    
 		header( 'Location: ' . $url, FALSE );
 		exit;
 	}
