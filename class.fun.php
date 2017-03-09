@@ -491,4 +491,64 @@ class FunCore {
     
     return implode(', ', $string) . ' ago';
   }
+  
+  public static function niceNumber( $number, $russian=TRUE ){
+    // first strip any formatting;
+    $number = ( 0+ str_replace( ',', '', $number ) );
+
+    // is this a number?
+    if ( ! is_numeric( $number ) ){
+      return FALSE;
+    }
+
+    $words  = array(
+      'trillion'  => 'триллион',
+      'billion'   => 'миллиард',
+      'million'   => 'миллион',
+      'thousand'  => 'тысяч'
+    );
+    
+    // now filter it;
+    if ( $number > 1000000000000 ){
+      $nice_word  = 'trillion';
+      
+      if( $russian ){
+        $nice_word  = $words[ $nice_word ];
+      }
+      
+      return round( ( $number/1000000000000 ), 2 ) . ' ' . $nice_word;
+    }
+    
+    if ( $number > 1000000000 ){
+      $nice_word  = 'billion';
+      
+      if( $russian ){
+        $nice_word  = $words[ $nice_word ];
+      }
+      
+      return round( ( $number/1000000000 ), 2 ) . ' ' . $nice_word;
+    }
+    
+    if ( $number > 1000000 ){
+      $nice_word  = 'million';
+      
+      if( $russian ){
+        $nice_word  = $words[ $nice_word ];
+      }
+      
+      return round( ( $number/1000000 ), 2 ) . ' ' . $nice_word;
+    }
+    
+    if ( $number > 1000 ){
+      $nice_word  = 'thousand';
+      
+      if( $russian ){
+        $nice_word  = $words[ $nice_word ];
+      }
+      
+      return round( ( $number/1000 ), 2 ) . ' ' . $nice_word;
+    }
+
+    return number_format( $number );
+  }
 }
