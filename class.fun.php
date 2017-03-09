@@ -502,9 +502,9 @@ class FunCore {
     }
 
     $words  = array(
-      'trillion'  => 'триллион',
-      'billion'   => 'миллиард',
-      'million'   => 'миллион',
+      'trillion'  => 'триллионов',
+      'billion'   => 'миллиардов',
+      'million'   => 'миллионов',
       'thousand'  => 'тысяч'
     );
     
