@@ -1,5 +1,5 @@
 <?php
-// previous version 
+// previous version https://github.com/cmcdonaldca/ohShopify.php
 // Lightweight object-oriented PHP (JSON) client for the Shopify API
 
 class ShopifyClient {
@@ -58,8 +58,8 @@ class ShopifyClient {
 	}
 
 	public function call( $method, $path, $params=array() ){
-		$baseurl  = "https://{$this->shop_domain}/";
-		$url      = $baseurl.ltrim( $path, '/' );
+		$baseurl  = 'https://' . $this->shop_domain . '/';
+		$url      = $baseurl . ltrim( $path, '/' );
     
     $query            = array();
     $payload          = array();
