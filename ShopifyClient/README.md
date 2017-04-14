@@ -14,50 +14,65 @@ Lightweight multi-paradigm PHP (JSON) client for the [Shopify API](http://api.sh
 Basic needs for authorization and redirecting
 
 ```php
+
 <?php
 
-	require 'shopify.php';
+	require 'class.shopifyclient.php';
 
 	/* Define your APP`s key and secret*/
-	define('SHOPIFY_API_KEY','');
-	define('SHOPIFY_SECRET','');
+	define( 'SHOPIFY_API_KEY', 'place here your SHOPIFY_API_KEY' );
+	define( 'SHOPIFY_SECRET', 'place here your SHOPIFY_SECRET' );
 	
 	/* Define requested scope (access rights) - checkout https://docs.shopify.com/api/authentication/oauth#scopes 	*/
-	define('SHOPIFY_SCOPE','');	//eg: define('SHOPIFY_SCOPE','read_orders,write_orders');
+	define( 'SHOPIFY_SCOPE', 'place here your scope' );	//eg: define('SHOPIFY_SCOPE','read_orders,write_orders');
 	
-	if (isset($_GET['code'])) { // if the code param has been sent to this page... we are in Step 2
+	if ( isset( $_GET['code'] ) ) { // if the code param has been sent to this page... we are in Step 2
 		// Step 2: do a form POST to get the access token
-		$shopifyClient = new ShopifyClient($_GET['shop'], "", SHOPIFY_API_KEY, SHOPIFY_SECRET);
+		$shopifyClient = new ShopifyClient( $_GET['shop'], '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
 		session_unset();
 		
 		// Now, request the token and store it in your session.
 		$_SESSION['token'] = $shopifyClient->getAccessToken($_GET['code']);
-		if ($_SESSION['token'] != '')
+    
+		if ($_SESSION['token'] != ''){
 			$_SESSION['shop'] = $_GET['shop'];
+    }
 	
-		header("Location: index.php");
+		header( 'Location: index.php' );
 		exit;		
 	}
+  
 	// if they posted the form with the shop name
-	else if (isset($_POST['shop'])) {
-	
+  $shop = $_POST['shop'];
+  
+  if( ! $shop ){
+    $shop = $_GET['shop'];
+  }
+  
+  
+	if ( $shop ) {
 		// Step 1: get the shopname from the user and redirect the user to the
 		// shopify authorization page where they can choose to authorize this app
-		$shop = isset($_POST['shop']) ? $_POST['shop'] : $_GET['shop'];
-		$shopifyClient = new ShopifyClient($shop, "", SHOPIFY_API_KEY, SHOPIFY_SECRET);
+		$shopifyClient = new ShopifyClient( $shop, '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
 	
 		// get the URL to the current page
-		$pageURL = 'http';
-		if ($_SERVER["HTTPS"] == "on") { $pageURL .= "s"; }
-		$pageURL .= "://";
-		if ($_SERVER["SERVER_PORT"] != "80") {
-			$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["SCRIPT_NAME"];
-		} else {
-			$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["SCRIPT_NAME"];
+		$pageURL  = 'http';
+		
+    if ( 'on' == $_SERVER['HTTPS'] ) {
+      $pageURL .= 's';
+    }
+		
+    $pageURL .= '://';
+		
+    if ( '80' == $_SERVER['SERVER_PORT'] ) {
+			$pageURL .= $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
+		}
+    else {
+			$pageURL .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
 		}
 	
 		// redirect to authorize url
-		header("Location: " . $shopifyClient->getAuthorizeUrl(SHOPIFY_SCOPE, $pageURL));
+		header( 'Location: ' . $shopifyClient->getAuthorizeUrl( SHOPIFY_SCOPE, $pageURL ) );
 		exit;
 	}
 	
