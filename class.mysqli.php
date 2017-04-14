@@ -11,7 +11,25 @@ class MyDB{
 	protected $security	= TRUE;
 	protected $badsql		= array();
 	protected $timer		= 0;
-			
+
+  private static $instance = NULL;
+  
+  public static function setInstance( $connect=NULL, $security=TRUE ){
+    if( ! $connect ){
+      return NULL;
+    }
+
+    self::$instance = new MyDB( $connect, $security );
+  }
+
+  public static function db(){
+    if( !self::$instance ){
+      return NULL;
+    }
+    
+    return self::$instance;
+  }
+  
 	function __construct( $connect, $security=TRUE ){
 		$this->connect( $connect, $security );
 	}
