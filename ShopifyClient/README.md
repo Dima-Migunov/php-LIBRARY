@@ -16,83 +16,82 @@ Basic needs for authorization and redirecting
 ```php
 
 <?php
+require 'class.shopifyclient.php';
 
-	require 'class.shopifyclient.php';
+/* Define your APP`s key and secret */
+define( 'SHOPIFY_API_KEY', 'place here your SHOPIFY_API_KEY' );
+define( 'SHOPIFY_SECRET', 'place here your SHOPIFY_SECRET' );
 
-	/* Define your APP`s key and secret*/
-	define( 'SHOPIFY_API_KEY', 'place here your SHOPIFY_API_KEY' );
-	define( 'SHOPIFY_SECRET', 'place here your SHOPIFY_SECRET' );
-	
-	/* Define requested scope (access rights) - checkout https://docs.shopify.com/api/authentication/oauth#scopes 	*/
-	define( 'SHOPIFY_SCOPE', 'place here your scope' );	//eg: define('SHOPIFY_SCOPE','read_orders,write_orders');
-	
-	if ( isset( $_GET['code'] ) ) { // if the code param has been sent to this page... we are in Step 2
-		// Step 2: do a form POST to get the access token
-		$shopifyClient = new ShopifyClient( $_GET['shop'], '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
-		session_unset();
-		
-		// Now, request the token and store it in your session.
-		$_SESSION['token'] = $shopifyClient->getAccessToken($_GET['code']);
-    
-		if ($_SESSION['token'] != ''){
-			$_SESSION['shop'] = $_GET['shop'];
-    }
-	
-		header( 'Location: index.php' );
-		exit;		
-	}
-  
-	// if they posted the form with the shop name
-  $shop = $_POST['shop'];
-  
-  if( ! $shop ){
-    $shop = $_GET['shop'];
+/* Define requested scope (access rights) - checkout https://docs.shopify.com/api/authentication/oauth#scopes 	 */
+define( 'SHOPIFY_SCOPE', 'place here your scope' ); //eg: define('SHOPIFY_SCOPE','read_orders,write_orders');
+
+if ( isset( $_GET['code'] ) ) { // if the code param has been sent to this page... we are in Step 2
+  // Step 2: do a form POST to get the access token
+  $shopifyClient = new ShopifyClient( $_GET['shop'], '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
+  session_unset();
+
+  // Now, request the token and store it in your session.
+  $_SESSION['token'] = $shopifyClient->getAccessToken( $_GET['code'] );
+
+  if ( $_SESSION['token'] != '' ) {
+    $_SESSION['shop'] = $_GET['shop'];
   }
-  
-  
-	if ( $shop ) {
-		// Step 1: get the shopname from the user and redirect the user to the
-		// shopify authorization page where they can choose to authorize this app
-		$shopifyClient = new ShopifyClient( $shop, '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
-	
-		// get the URL to the current page
-		$pageURL  = 'http';
-		
-    if ( 'on' == $_SERVER['HTTPS'] ) {
-      $pageURL .= 's';
-    }
-		
-    $pageURL .= '://';
-		
-    if ( '80' == $_SERVER['SERVER_PORT'] ) {
-			$pageURL .= $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
-		}
-    else {
-			$pageURL .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
-		}
-	
-		// redirect to authorize url
-		header( 'Location: ' . $shopifyClient->getAuthorizeUrl( SHOPIFY_SCOPE, $pageURL ) );
-		exit;
-	}
-	
-	// first time to the page, show the form below
+
+  header( 'Location: index.php' );
+  exit;
+}
+
+// if they posted the form with the shop name
+$shop = $_POST['shop'];
+
+if ( !$shop ) {
+  $shop = $_GET['shop'];
+}
+
+
+if ( $shop ) {
+  // Step 1: get the shopname from the user and redirect the user to the
+  // shopify authorization page where they can choose to authorize this app
+  $shopifyClient = new ShopifyClient( $shop, '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
+
+  // get the URL to the current page
+  $pageURL = 'http';
+
+  if ( 'on' == $_SERVER['HTTPS'] ) {
+    $pageURL .= 's';
+  }
+
+  $pageURL .= '://';
+
+  if ( '80' == $_SERVER['SERVER_PORT'] ) {
+    $pageURL .= $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
+  }
+  else {
+    $pageURL .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
+  }
+
+  // redirect to authorize url
+  header( 'Location: ' . $shopifyClient->getAuthorizeUrl( SHOPIFY_SCOPE, $pageURL ) );
+  exit;
+}
+
+// first time to the page, show the form below
 ?>
-	<p>Install this app in a shop to get access to its private admin data.</p> 
- 
-	<p style="padding-bottom: 1em;">
-		<span class="hint">Don&rsquo;t have a shop to install your app in handy? <a href="https://app.shopify.com/services/partners/api_clients/test_shops">Create a test shop.</a></span>
-	</p> 
-	 
-	<form action="" method="post">
-	  <label for='shop'><strong>The URL of the Shop</strong> 
-	    <span class="hint">(enter it exactly like this: myshop.myshopify.com)</span> 
-	  </label> 
-	  <p> 
-	    <input id="shop" name="shop" size="45" type="text" value="" /> 
-	    <input name="commit" type="submit" value="Install" /> 
-	  </p> 
-	</form>
+<p>Install this app in a shop to get access to its private admin data.</p> 
+
+<p style="padding-bottom: 1em;">
+  <span class="hint">Don&rsquo;t have a shop to install your app in handy? <a href="https://app.shopify.com/services/partners/api_clients/test_shops">Create a test shop.</a></span>
+</p> 
+
+<form action="" method="post">
+  <label for='shop'><strong>The URL of the Shop</strong> 
+    <span class="hint">(enter it exactly like this: myshop.myshopify.com)</span> 
+  </label> 
+  <p> 
+    <input id="shop" name="shop" size="45" type="text" value="" /> 
+    <input name="commit" type="submit" value="Install" /> 
+  </p> 
+</form>
 
 ```
 
