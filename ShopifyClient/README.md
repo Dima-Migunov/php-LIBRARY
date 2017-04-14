@@ -38,7 +38,7 @@ if ( $shop && isset( $_GET['code'] ) ) { // if the code param has been sent to t
   $_SESSION['token'] = Shopify::client()->getAccessToken( $_GET['code'] );
 
   if ( $_SESSION['token'] != '' ) {
-    $_SESSION['shop'] = $_GET['shop'];
+    $_SESSION['shop'] = $shop;
   }
 
   header( 'Location: index.php' );
