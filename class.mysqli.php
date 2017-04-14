@@ -227,7 +227,7 @@ class MyDB{
 				continue;
 			}
 			
-			$row[ $key ]	= $this->strDecode( $value );
+			$row[ $key ]	= MyDB::strDecode( $value );
 		}
 		
 		return $row;
@@ -315,7 +315,7 @@ class MyDB{
 			}
 
 			if( 's' == $types && $this->security ){
-				$vals[ $i ]	= $this->strEncode( $vals[ $i ] );
+				$vals[ $i ]	= MyDB::strEncode( $vals[ $i ] );
 			}
 			
 			$vals[ $i ]	= $this->SQLto( $vals[ $i ] );
@@ -333,12 +333,12 @@ class MyDB{
 		
 		return $data;
 	}
-	
-	public function strEncode( $str ){
+  
+  public static function strEncode( $str ){
 		return urlencode( $str );
-	}
+  }
 	
-	public function strDecode( $str ){
+	public static function strDecode( $str ){
 		return urldecode( $str );
 	}
 
