@@ -16,22 +16,26 @@ Basic needs for authorization and redirecting
 ```php
 
 <?php
-require 'class.shopifyclient.php';
+require 'class.shopify.php';
 
-/* Define your APP`s key and secret */
-define( 'SHOPIFY_API_KEY', 'place here your SHOPIFY_API_KEY' );
-define( 'SHOPIFY_SECRET', 'place here your SHOPIFY_SECRET' );
+// if they posted the form with the shop name
+$shop = $_POST['shop'];
+
+if ( !$shop ) {
+  $shop = $_GET['shop'];
+}
+
+Shopify::init( $shop, $_SESSION['shopify_token'], $SHOPIFY_API_KEY, $SHOPIFY_SECRET );
 
 /* Define requested scope (access rights) - checkout https://docs.shopify.com/api/authentication/oauth#scopes 	 */
 define( 'SHOPIFY_SCOPE', 'place here your scope' ); //eg: define('SHOPIFY_SCOPE','read_orders,write_orders');
 
-if ( isset( $_GET['code'] ) ) { // if the code param has been sent to this page... we are in Step 2
+if ( $shop && isset( $_GET['code'] ) ) { // if the code param has been sent to this page... we are in Step 2
   // Step 2: do a form POST to get the access token
-  $shopifyClient = new ShopifyClient( $_GET['shop'], '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
   session_unset();
 
   // Now, request the token and store it in your session.
-  $_SESSION['token'] = $shopifyClient->getAccessToken( $_GET['code'] );
+  $_SESSION['token'] = Shopify::client()->getAccessToken( $_GET['code'] );
 
   if ( $_SESSION['token'] != '' ) {
     $_SESSION['shop'] = $_GET['shop'];
@@ -41,18 +45,9 @@ if ( isset( $_GET['code'] ) ) { // if the code param has been sent to this page.
   exit;
 }
 
-// if they posted the form with the shop name
-$shop = $_POST['shop'];
-
-if ( !$shop ) {
-  $shop = $_GET['shop'];
-}
-
-
 if ( $shop ) {
   // Step 1: get the shopname from the user and redirect the user to the
   // shopify authorization page where they can choose to authorize this app
-  $shopifyClient = new ShopifyClient( $shop, '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
 
   // get the URL to the current page
   $pageURL = 'http';
@@ -61,17 +56,17 @@ if ( $shop ) {
     $pageURL .= 's';
   }
 
-  $pageURL .= '://';
+  $pageURL .= '://' . $_SERVER['SERVER_NAME'];
 
   if ( '80' == $_SERVER['SERVER_PORT'] ) {
-    $pageURL .= $_SERVER['SERVER_NAME'] . $_SERVER['SCRIPT_NAME'];
+    $pageURL .= $_SERVER['SCRIPT_NAME'];
   }
   else {
-    $pageURL .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
+    $pageURL .= ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
   }
 
   // redirect to authorize url
-  header( 'Location: ' . $shopifyClient->getAuthorizeUrl( SHOPIFY_SCOPE, $pageURL ) );
+  header( 'Location: ' . Shopify::client()->getAuthorizeUrl( SHOPIFY_SCOPE, $pageURL ) );
   exit;
 }
 
@@ -102,13 +97,20 @@ Making API calls:
 ```php
 <?php
 
-require 'class.shopifyclient.php';
+require 'class.shopify.php';
 
-$sc = new ShopifyClient( $_SESSION['shop'], $_SESSION['token'], $api_key, $secret );
+$shop = $_POST['shop'];
+
+if ( !$shop ) {
+  $shop = $_GET['shop'];
+}
+
+Shopify::init( $shop, $_SESSION['shopify_token'], $SHOPIFY_API_KEY, $SHOPIFY_SECRET );
 
 try {
   // Get all products
-  $products = $sc->call( 'GET', '/admin/products.json', array( 'published_status' => 'published' ) );
+  $products = Shopify::client()->call( 'GET', '/admin/products.json',
+                                        array( 'published_status' => 'published' ) );
 
   // Create a new recurring charge
   $charge = array(
@@ -121,12 +123,14 @@ try {
   );
 
   try {
-    $recurring_application_charge = $sc->call( 'POST', '/admin/recurring_application_charges.json', $charge );
+    $recurring_application_charge = Shopify::client()->call( 'POST',
+                                                              '/admin/recurring_application_charges.json',
+                                                              $charge );
 
     // API call limit helpers
-    echo $sc->callsMade(); // 2
-    echo $sc->callsLeft(); // 498
-    echo $sc->callLimit(); // 500
+    echo Shopify::client()->callsMade(); // 2
+    echo Shopify::client()->callsLeft(); // 498
+    echo Shopify::client()->callLimit(); // 500
   }
   catch ( ShopifyApiException $e ) {
     // If you're here, either HTTP status code was >= 400 or response contained the key 'errors'
@@ -152,12 +156,24 @@ When receiving requests from the Shopify API, validate the signature value:
 
 ```php
 <?php
+  Shopify::init( $_GET['shop'], '', $SHOPIFY_API_KEY, $SHOPIFY_SECRET );
 
-  $sc = new ShopifyClient( $_GET['shop'], '', SHOPIFY_API_KEY, SHOPIFY_SECRET );
+  if( !Shopify::client()->validateSignature( $_GET ) ){
+    die('Error: invalid signature.');
+  }
+
+?>
+
+or you can by another
+
+<?php
+
+  $sc = new ShopifyClient( $_GET['shop'], '', $SHOPIFY_API_KEY, $SHOPIFY_SECRET );
 
   if( !$sc->validateSignature( $_GET ) ){
     die('Error: invalid signature.');
   }
 
 ?>
+```
 
