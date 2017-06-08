@@ -323,11 +323,12 @@ trait FunCore {
     }
     
     $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?';
-    $password = str_shuffle( $chars );
-    $buffer   = [];
+    $password     = str_shuffle( $chars );
+    $chars_length = strlen( $chars );
+    $buffer       = [];
 
     for( $i=0; $i<$length; $i++ ){
-      $n  = rand( 1, $length ) - 1;
+      $n  = rand( 1, $chars_length ) - 1;
       $buffer[] = $chars[ $n ];
     }
 
