@@ -1,8 +1,10 @@
 <?php
-class FUN extends FunCore{}
+class FUN{
+  use FunCore;
+}
 
 
-class FunCore {
+trait FunCore {
 	static $version	= '2016-10-06';
 
 	// Checkers
@@ -314,16 +316,22 @@ class FunCore {
 	}
 
 	static function passwordGenerator( $length=8, $any_symbols=TRUE ) {
-		if ( $any_symbols ) {
-			$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
-			$password = str_shuffle( $chars );
-		}
-		else {
+    if( ! $any_symbols ){
 			$password = self::idhash( NULL, TRUE );
-		}
-		
-		$password = substr( $password, 0, $length );
-		return $password;
+  		$password = substr( $password, 0, $length );
+      return $password;
+    }
+    
+    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?';
+    $password = str_shuffle( $chars );
+    $buffer   = [];
+
+    for( $i=0; $i<$length; $i++ ){
+      $n  = rand( 1, $length ) - 1;
+      $buffer[] = $chars[ $n ];
+    }
+
+    return implode( '', $buffer );
 	}
 
 	// age of file in seconds
@@ -550,5 +558,9 @@ class FunCore {
     }
 
     return number_format( $number );
+  }
+  
+  public static function test(){
+    echo self::passwordGenerator( 8 );
   }
 }
