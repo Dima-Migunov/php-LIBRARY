@@ -1,7 +1,9 @@
 <?php
-class FUN{
-  use FunCore;
-}
+// Use like this:
+
+//class FUN{
+//  use FunCore;
+//}
 
 
 trait FunCore {
