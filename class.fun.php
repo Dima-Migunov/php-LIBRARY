@@ -198,7 +198,9 @@ trait FunCore {
 		header( 'Content-type: application/json' );
     $data = json_encode( $data );
     
-    if( $exit ) exit( $data );
+    if( $exit ){
+      exit( $data );
+    }
 		
     echo $data;
 	}
@@ -346,6 +348,16 @@ trait FunCore {
 		$age = time() - filectime( $filename );
 		return $age;
 	}
+  
+  static function filectime( $filename ){
+		$filetime = NULL;
+    
+    if( file_exists( $filename ) ){
+      $filetime = filectime( $filename );
+    }
+    
+    return $filetime;
+  }
 
 	static function deleteFile( $filename ) {
 		if ( !file_exists( $filename ) ){
