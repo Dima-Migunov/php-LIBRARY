@@ -232,6 +232,11 @@ trait FunCore {
 		header( 'Location: ' . $url, FALSE );
 		exit;
 	}
+  
+  static function redirect404(){
+		header( 'HTTP/1.1 404 Not Found' );
+		exit;
+  }
 
 	// create Cookie
 	static function createCookie( $nameCook, $value, $period ) {
