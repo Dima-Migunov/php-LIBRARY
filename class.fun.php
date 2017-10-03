@@ -226,15 +226,20 @@ trait FunCore {
 
 	static function redirect( $url='/', $permanent=FALSE ) {
     if( $permanent ){
-      header("HTTP/1.1 301 Moved Permanently");
+      header( 'HTTP/1.1 301 Moved Permanently' );
     }
     
 		header( 'Location: ' . $url, FALSE );
 		exit;
 	}
   
-  static function redirect404(){
+  static function redirect404( $page=NULL ){
 		header( 'HTTP/1.1 404 Not Found' );
+    
+    if( $page ){
+      self::redirect( $page );
+    }
+
 		exit;
   }
 
