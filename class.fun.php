@@ -213,13 +213,12 @@ trait FunCore {
 
 	// ACTIONS
 	static function send_mail( $from, $to, $subject, $body ) {
-		$headers = '';
-		$headers .= "From: $from\n";
-		$headers .= "Reply-to: $from\n";
-		$headers .= "Return-Path: $from\n";
-		$headers .= "Message-ID: <" . md5( uniqid( time() ) ) . "@" . $_SERVER['SERVER_NAME'] . ">\n";
-		$headers .= "MIME-Version: 1.0\n";
-		$headers .= "Date: " . date( 'r', time() ) . "\n";
+		$headers  = "From: $from\n"
+              . "Reply-to: $from\n"
+              . "Return-Path: $from\n"
+              . "Message-ID: <" . md5( uniqid( time() ) ) . '@' . $_SERVER['SERVER_NAME'] . ">\n"
+              . "MIME-Version: 1.0\n"
+              . "Date: " . date( 'r', time() ) . "\n";
 
 		mail( $to, $subject, $body, $headers );
 	}
@@ -587,5 +586,9 @@ trait FunCore {
   
   public static function test(){
     echo self::passwordGenerator( 8 );
+  }
+  
+  public static function clear_IP( $ip ){
+    return preg_replace( '/[^\.\d]/', '', $ip );
   }
 }
