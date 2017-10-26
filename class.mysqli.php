@@ -6,7 +6,7 @@ class MyDB{
 	
 	// Forbidden words for values
 	public $forbidden = array( 'SELECT', 'UPDATE', 'REPLACE', 'INSERT', 'DELETE', 'DROP' );
-	public $mylink;
+	public $mylink, $error;
 
 	protected $security	= TRUE;
 	protected $badsql		= array();
@@ -495,5 +495,29 @@ class MyDB{
     }
     
     $this->security = TRUE;
+  }
+  
+  public function emptyTable( $table ){
+    $table  = $this->SQLto( $table );
+    $query  = "TRUNCATE `{$table}`";
+    $result = $this->mylink->query( $query );
+
+    if( FALSE === $result ){
+      $this->error  = 'ERROR query: ' . $query;
+    }
+    
+    return ( $result !== FALSE );
+  }
+  
+  public static function deleteTable( $table ){
+    $table  = $this->SQLto( $table );
+    $query  = "DROP TABLE `{$table}`";
+    $result = $this->mylink->query( $query );
+
+    if( FALSE === $result ){
+      $this->error  = 'ERROR query: ' . $query;
+    }
+    
+    return ( $result !== FALSE );
   }
 }
