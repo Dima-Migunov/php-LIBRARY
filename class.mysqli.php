@@ -498,7 +498,6 @@ class MyDB{
   }
   
   public function emptyTable( $table ){
-    $table  = $this->SQLto( $table );
     $query  = "TRUNCATE `{$table}`";
     $result = $this->mylink->query( $query );
 
@@ -510,7 +509,6 @@ class MyDB{
   }
   
   public static function deleteTable( $table ){
-    $table  = $this->SQLto( $table );
     $query  = "DROP TABLE `{$table}`";
     $result = $this->mylink->query( $query );
 
