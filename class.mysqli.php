@@ -1,6 +1,8 @@
 <?php
-class MyDB{
-	public $version	= '2015-12-20';
+namespace dmitri;
+
+class MySql{
+	public $version	= '2017-11-09';
 	
 	public $setUTF8 = TRUE;
 	
