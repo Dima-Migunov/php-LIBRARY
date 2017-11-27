@@ -15,7 +15,7 @@ class Funs {
 
 	// Converters
 	static function only09az( $str ) {
-		return preg_replace( '#([^0-9A-z])#Usi', '', $str );
+		return preg_replace( '#([^0-9A-Za-z])#s', '', $str );
 	}
 
 	// Object to Array
@@ -262,7 +262,7 @@ class Funs {
 		
 		preg_match_all( '#(\.)#', $host, $matches );
 		
-		if ( 1== count( $matches[1] ) ){
+		if ( 1 == count( $matches[1] ) ){
 			$host = '.' . $host;
 		}
 
@@ -334,6 +334,21 @@ class Funs {
 
 		return md5( $secret );
 	}
+  
+  public static function random_hash( int $length ){
+    if( $length < 1 ){
+      return NULL;
+    }
+    
+    $n    = $length % 32 + 1;
+    $hash = '';
+    
+    for( $i=0; $i<$n; $i++ ){
+      $hash .= self::idhash( '', FALSE );
+    }
+    
+    return substr( $hash, 0, $length );
+  }
 
 	static function passwordGenerator( $length=8, $any_symbols=TRUE ) {
     if( ! $any_symbols ){
@@ -345,14 +360,14 @@ class Funs {
     $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?';
     $password     = str_shuffle( $chars );
     $chars_length = strlen( $chars );
-    $buffer       = [];
+    $buffer       = '';
 
     for( $i=0; $i<$length; $i++ ){
       $n  = rand( 1, $chars_length ) - 1;
-      $buffer[] = $chars[ $n ];
+      $buffer .= $chars[ $n ];
     }
 
-    return implode( '', $buffer );
+    return $buffer;
 	}
 
 	// age of file in seconds
@@ -438,10 +453,10 @@ class Funs {
 	}
 	
 	static function headerNoCache(){
-		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-		header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-		header("Cache-Control: post-check=0, pre-check=0", false);
-		header("Pragma: no-cache");
+		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
+		header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
+		header( 'Cache-Control: post-check=0, pre-check=0', FALSE );
+		header( 'Pragma: no-cache' );
 	}
 	
 	// Function to get the client IP address
@@ -589,10 +604,6 @@ class Funs {
     }
 
     return number_format( $number );
-  }
-  
-  public static function test(){
-    echo self::passwordGenerator( 8 );
   }
   
   public static function clear_IP( $ip ){
