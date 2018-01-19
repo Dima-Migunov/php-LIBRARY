@@ -6,7 +6,7 @@ class Funs {
 
 	// Checkers
 	static function checkEmail( $email ) {
-		return preg_match( '/^[\.A-z0-9_\-\+]+[@][A-z0-9_\-]+([.][A-z0-9_\-]+)+[A-z]{1,4}$/', $email );
+		return preg_match( '/^[0-9a-zA-Z_.\-]{2,50}[@]{1}[0-9a-zA-Z_./-]{2,50}[.]{1}[a-zA-Z]{2,5}$/', $email );
 	}
 	
 	static function isValidEmail( $email ){
