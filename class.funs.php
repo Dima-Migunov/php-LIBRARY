@@ -2,7 +2,7 @@
 namespace dmitri;
 
 class Funs {
-	static $version	= '2017-11-02';
+	const VERSION	= '2010-01-19';
 
 	// Checkers
 	static function checkEmail( $email ) {
