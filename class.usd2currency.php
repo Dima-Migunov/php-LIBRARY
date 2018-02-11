@@ -35,16 +35,13 @@ class USD2Currency{
 	}
 	
 	protected static function getNewCurrencies(){
-    if ( self::$cache && file_exists( self::$cache_file ) ){
-			$dtime      = time() - filectime( self::$cache_file );
-			$cache_time = self::$cache_time * 3600;
-			
-      if ( $dtime <= $cache_time ){
-				return file_get_contents( self::$cache_file );
-			}
-		}
+    $data = self::getCacheData();
+    
+    if( $data ){
+      return $data;
+    }
 
-    $data  = file_get_contents( 'http://api.fixer.io/latest?base=USD' );
+    $data  = file_get_contents( 'https://api.fixer.io/latest?base=USD' );
 
     if ( self::$cache ){
       file_put_contents( self::$cache_file, $data );
@@ -52,4 +49,25 @@ class USD2Currency{
 
     return $data;
 	}
+  
+  protected static function getCacheData(){
+    if ( ! self::$cache || ! file_exists( self::$cache_file ) ){
+      return NULL;
+    }
+    
+    $dtime      = time() - filectime( self::$cache_file );
+    $cache_time = self::$cache_time * 3600;
+
+    if( $dtime > $cache_time ){
+      return NULL;
+    }
+    
+    $data = file_get_contents( self::$cache_file );
+
+    if( $data ){
+      return $data;
+    }
+    
+    return NULL;
+  }
 }
