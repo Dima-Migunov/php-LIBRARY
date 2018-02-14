@@ -21,7 +21,7 @@ class MySql{
       return NULL;
     }
 
-    self::$instance = new MyDB( $connect, $security );
+    self::$instance = new MySql( $connect, $security );
   }
 
   public static function db(){
@@ -37,13 +37,17 @@ class MySql{
 	}
 	
 	public function connect( $connect, $security=TRUE ){
+    if( NULL == $connect ){
+      return;
+    }
+    
 		$this->security = $security;
 		
 		if( !$connect['password'] && $connect['pass'] ){
 			$connect['password'] = $connect['pass'];
 		}
 
-		$this->mylink = new mysqli( $connect['host'], $connect['user'], $connect['password'], $connect['db'] );
+		$this->mylink = new \mysqli( $connect['host'], $connect['user'], $connect['password'], $connect['db'] );
 		
 		if ( $this->mylink->connect_error ){
 			die('Connect Error (' .$this->mylink->connect_errno . ') '. $this->mylink->connect_error);
@@ -185,7 +189,13 @@ class MySql{
 			'src'			=> NULL
 		);
 		
+    try{
 		$arresult['src']	= $this->mylink->query( $query );
+    }
+    catch( Exception $e ){
+      $error  = $e->getMessage() . "\n" . print_r( $query, TRUE );
+      trigger_error( $error, E_USER_ERROR );
+    }
 		
 		if( ! $arresult['src'] ){
 			return $arresult;
@@ -229,7 +239,7 @@ class MySql{
 				continue;
 			}
 			
-			$row[ $key ]	= MyDB::strDecode( $value );
+			$row[ $key ]	= self::strDecode( $value );
 		}
 		
 		return $row;
@@ -317,7 +327,7 @@ class MySql{
 			}
 
 			if( 's' == $types && $this->security ){
-				$vals[ $i ]	= MyDB::strEncode( $vals[ $i ] );
+				$vals[ $i ]	= self::strEncode( $vals[ $i ] );
 			}
 			
 			$vals[ $i ]	= $this->SQLto( $vals[ $i ] );
