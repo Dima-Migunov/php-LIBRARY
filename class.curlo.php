@@ -1,14 +1,15 @@
 <?php
 class CURLO{
-	public static $version	= '2015-11-04';
+	const VERSION	= '2018-04-02';
 
-	public static $agent				= 'Mozilla/5.0 (Windows; I; Windows NT 5.1; en-GB; rv:1.9.2.13) Gecko/20100101 Firefox/20.0';
-	public static $get_header		= FALSE;
-	public static $follow				= FALSE;
-	public static $referer			= 'http://google.com/';
-	public static $time2connect	= 30;
-	public static $timeout			= 30;
-	public static $cookiefile		= '/tmp/cookie.txt';
+	private static
+    $agent  = 'Mozilla/5.0 (Windows; I; Windows NT 5.1; en-GB; rv:1.9.2.13) Gecko/20100101 Firefox/20.0',
+    $need_header	= FALSE,
+    $follow				= FALSE,
+    $referer			= 'http://google.com/',
+    $time2connect = 30,
+    $timeout			= 30,
+    $cookiefile		= '/tmp/cookie.txt';
 
 	public static function send( $url, $data=NULL ){
 		touch( self::$cookiefile );
@@ -16,7 +17,7 @@ class CURLO{
 		$curl = curl_init ();
 		
 		curl_setopt( $curl, CURLOPT_URL, $url );
-		curl_setopt( $curl, CURLOPT_HEADER, self::$get_header );
+		curl_setopt( $curl, CURLOPT_HEADER, self::$need_header );
 		curl_setopt( $curl, CURLOPT_USERAGENT, self::$agent );
 		curl_setopt( $curl, CURLOPT_AUTOREFERER, true );
 		curl_setopt( $curl, CURLOPT_FAILONERROR, true );
@@ -44,24 +45,20 @@ class CURLO{
 		return $result;
 	}
 
-	public static function get( $url, $get_header=NULL ){
-		if ( $get_header !== NULL ){
-			self::$get_header = $get_header;
-		}
+	public static function get( $url, $need_header=FALSE ){
+    self::$need_header = $need_header;
 		
 		return self::send( $url );
 	}
 
-	public static function post( $url, $data, $get_header=NULL ){
+	public static function post( $url, $data, $need_header=FALSE ){
 		if( ! $data ){
 			return '';
 		}
 		
 		$data	= self::prepareData( $data );
 		
-		if ( $get_header !== null ){
-			self::$get_header = $get_header;
-		}
+    self::$need_header = $need_header;
 		
 		return self::send( $url, $data );
 	}
@@ -81,4 +78,40 @@ class CURLO{
 		
 		return $str;
 	}
+  
+  public static function set_cookie_file( $absolute_filename ){
+    self::$cookiefile = $absolute_filename;
+
+    if( file_exists( $absolute_filename ) ){
+      unlink( $absolute_filename );
+    }
+  }
+  
+  public static function set_timeout( $timeout=30 ){
+    if( is_numeric( $timeout ) ){
+      self::$timeout  = $timeout;
+    }
+  }
+  
+  public static function need_header( $need_header=TRUE ){
+    self::$need_header  = $need_header;
+  }
+  
+  public static function follow_redirect( $follow=TRUE ){
+    self::$follow = $follow;
+  }
+  
+  public static function set_referer( $referer ){
+    self::$referer  = $referer;
+  }
+  
+  public static function set_agent( $agent ){
+    self::$agent  = $agent;
+  }
+  
+  public static function set_time2connect( $time_connect=30 ){
+    if( is_numeric( $time_connect ) ){
+      self::$time2connect = intval( $time_connect );
+    }
+  }
 }
