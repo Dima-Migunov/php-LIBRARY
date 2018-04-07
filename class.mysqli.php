@@ -298,10 +298,11 @@ class MySql{
 		
 		$data		= $this->checkData( $data );
 		$table	= $this->prepareTable( $table );
+    $keys   = '`' . implode( '`,`', $data['keys'] ) . '`';
+    $vals   = implode( ',', $data['query'] );
 		
 		// create INSERT query
-		$query	= "INSERT INTO {$table} (`" . implode( '`,`', $data['keys'] ) ."`) "
-							. "VALUES (" . implode( ',', $data['query'] ) . ")";
+		$query	= "INSERT INTO {$table} ({$keys}) VALUES ($vals)";
 		
 		return $this->execute( $query, $data['vals'] );
 	}
