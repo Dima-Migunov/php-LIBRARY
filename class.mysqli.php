@@ -314,20 +314,25 @@ class MySql{
 		$query	= $matches	= array();
 		
 		foreach ( $vals as $i=>$d ){
-			
-			if ( preg_match( '#^(i|d|s|b|null):(.*)$#s', $d, $matches ) ){
+			if ( preg_match( '#^(i|d|s|t|b|null):(.*)$#s', $d, $matches ) ){
 				if ( 'null' == $matches[1] ){
 					$matches[1] = NULL;
 				}
-
-				$types		.= $matches[1];
-				$vals[$i]	 = $matches[2];
+        
+        if( 't' == $matches[1] ){
+          $types  .= 's';
+        }
+        else{
+  				$types		.= $matches[1];
+        }
+				
+        $vals[$i]	 = $matches[2];
 			}
 			else{
 				$types .= 's';
 			}
 
-			if( 's' == $types && $this->security ){
+			if( 's' == $matches[1] && $this->security ){
 				$vals[ $i ]	= self::strEncode( $vals[ $i ] );
 			}
 			
@@ -348,6 +353,10 @@ class MySql{
 	}
   
   public static function strEncode( $str ){
+    if( preg_math( '#^\d+\-\d+\-\d+\s\d+\:\d+:\d+$#', $str ) ){
+      return $str;
+    }
+    
 		return urlencode( $str );
   }
 	
