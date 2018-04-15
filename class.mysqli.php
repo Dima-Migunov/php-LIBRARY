@@ -354,7 +354,7 @@ class MySql{
   
   public static function strEncode( $str ){
     // if timestamp
-    if( preg_math( '#^\d+\-\d+\-\d+\s\d+\:\d+:\d+$#', $str ) ){
+    if( preg_match( '#^\d+\-\d+\-\d+\s\d+\:\d+:\d+$#', $str ) ){
       return $str;
     }
     
