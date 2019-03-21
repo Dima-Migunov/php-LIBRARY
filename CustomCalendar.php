@@ -18,6 +18,11 @@ class CustomCalendar{
     $deltaYears   = intval( $year ) - self::$pointYear;
     $leapYears    = floor( abs( $deltaYears / self::$periodOfLeapYear ) );
     $monthAmount  = $deltaYears * self::$monthsInYear + intval( $months ) - 1;
+    
+    if( $monthAmount < 0 ){
+      return 'Date in the Past ;)';
+    }
+
     $fmonths      = floor( abs( $monthAmount ) / 2 );
     $smonths      = 0;
     
@@ -25,14 +30,9 @@ class CustomCalendar{
       $smonths  = abs( $monthAmount ) - $fmonths;
     }
     
-    if( $monthAmount >= 0 ){
-      $days += $fmonths * self::$daysOfFirstMonth
-              + $smonths * self::$daysOfSecondMonth
-              + $leapYears * self::$deltaDaysOfLeapYears;
-    }
-    else{
-      return 'Date in the Past ;)';
-    }
+    $days += $fmonths * self::$daysOfFirstMonth
+            + $smonths * self::$daysOfSecondMonth
+            + $leapYears * self::$deltaDaysOfLeapYears;
 
     $weekday  = $days % count( self::$week ) - 1
               + array_search( self::$firstDayOfPointYear, self::$week);
