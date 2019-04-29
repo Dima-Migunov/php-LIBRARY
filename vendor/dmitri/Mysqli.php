@@ -49,7 +49,7 @@ class Mysqli {
       $connect['password'] = $connect['pass'];
     }
 
-    $this->mylink = new \mysqli( $connect['host'], $connect['user'], $connect['password'], $connect['db'] );
+    $this->mylink = new mysqli( $connect['host'], $connect['user'], $connect['password'], $connect['db'] );
 
     if ( $this->mylink->connect_error ) {
       die( 'Connect Error (' . $this->mylink->connect_errno . ') ' . $this->mylink->connect_error );
