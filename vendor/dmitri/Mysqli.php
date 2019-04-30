@@ -20,7 +20,7 @@ class Mysqli {
       return NULL;
     }
 
-    self::$instance = new MySql( $connect, $security );
+    self::$instance = new Mysqli( $connect, $security );
   }
 
   public static function db()
