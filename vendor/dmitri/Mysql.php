@@ -425,6 +425,16 @@ class Mysql {
 
     $arresult['rows'] = $stmt->affected_rows;
     $stmt->close();
+    
+    if( $arresult['values'] ){
+      $arresult['full_query'] = $arresult['query'];
+      $values = $arresult['values'];
+      array_shift( $values );
+      
+      foreach ( $values as $item ){
+        $arresult['full_query'] = preg_replace( '#\?#', "'{$item}'", $arresult['full_query'], 1 );
+      }
+    }
 
     $arresult['time'] = $this->getTimer();
 
