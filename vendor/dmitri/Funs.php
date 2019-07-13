@@ -694,10 +694,20 @@ class Funs {
     }
   }
   
-  public static function in_array($needle, $array)
+  public static function in_array($needle, $array, $all=true)
   {
       if( !is_array($needle) ) {
           return in_array($needle, $array);
+      }
+      
+      if(!$all) {
+          foreach ( $needle as $item ) {
+              if(is_array($item, $array) ) {
+                  return true;
+              }
+          }
+          
+          return false;
       }
       
       foreach ( $needle as $item ) {
