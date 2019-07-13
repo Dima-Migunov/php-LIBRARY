@@ -693,5 +693,20 @@ class Funs {
       }
     }
   }
+  
+  public static function in_array($needle, $array)
+  {
+      if( !is_array($needle) ) {
+          return in_array($needle, $array);
+      }
+      
+      foreach ( $needle as $item ) {
+          if( !is_array($item, $array) ) {
+              return false;
+          }
+      }
+      
+      return true;
+  }
 
 }
