@@ -702,7 +702,7 @@ class Funs {
       
       if(!$all) {
           foreach ( $needle as $item ) {
-              if(is_array($item, $array) ) {
+              if(in_array($item, $array) ) {
                   return true;
               }
           }
@@ -711,7 +711,7 @@ class Funs {
       }
       
       foreach ( $needle as $item ) {
-          if( !is_array($item, $array) ) {
+          if( !in_array($item, $array) ) {
               return false;
           }
       }
