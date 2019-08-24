@@ -276,7 +276,7 @@ class Mysql {
       $row[$key] = self::strDecode( $value );
       
       if (preg_match('#\d{4}\-\d{2}\-\d{2}#', $value)) {
-          $row['unx_' . $key]   = strtotime($value);
+          $row['unix_' . $key]   = strtotime($value);
       }
     }
 
