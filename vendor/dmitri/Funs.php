@@ -719,5 +719,14 @@ class Funs {
       return true;
   }
 
-  
+  public static function timeDelta(int $time, int $delta=null)
+  {
+      $dif  = time() - $time;
+      
+      if(!$delta) {
+        return $dif;
+      }
+      
+      return ($delta < $dif);
+  }
 }
