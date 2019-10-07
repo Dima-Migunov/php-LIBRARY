@@ -612,6 +612,7 @@ class Mysql {
 
     if ( FALSE === $result ) {
       $this->error = 'ERROR query: ' . $query;
+      return null;
     }
 
     if ( 0 == $result['data'][0]['amount'] ) {
