@@ -2,731 +2,739 @@
 
 namespace vendor\dmitri;
 
-class Funs {
+class Funs
+{
 
-  const VERSION = '2019-04-28';
+    const VERSION = '2019-04-28';
 
-  // Checkers
-  static function checkEmail( $email )
-  {
-    return preg_match( '/^[0-9a-zA-Z_.\-]{2,50}[@]{1}[0-9a-zA-Z_./-]{2,50}[.]{1}[a-zA-Z]{2,5}$/', $email );
-  }
-
-  static function isValidEmail( $email )
-  {
-    return self::checkEmail( $email );
-  }
-
-  // Converters
-  static function only09az( $str )
-  {
-    return preg_replace( '#([^0-9A-Za-z])#s', '', $str );
-  }
-
-  // Object to Array
-  static function object2array( $object )
-  {
-    $json = json_encode( $object );
-
-    if ( FALSE === $json ) {
-      return FALSE;
+    // Checkers
+    static function checkEmail($email)
+    {
+        return preg_match('/^[0-9a-zA-Z_.\-]{2,50}[@]{1}[0-9a-zA-Z_./-]{2,50}[.]{1}[a-zA-Z]{2,5}$/', $email);
     }
 
-    return json_decode( $json, TRUE );
-  }
-
-  static function objectToArray( $object )
-  {
-    return object2array( $object );
-  }
-
-  // XML to Array
-  static function xml2array( $xml )
-  {
-    $xml = simplexml_load_string( $xml, 'SimpleXMLElement', LIBXML_NOCDATA );
-    return self::object2array( $xml );
-  }
-
-  static function xmlToArray( $xml )
-  {
-    return xml2array( $xml );
-  }
-
-  // Convert link in text into hyperlink
-  static function url2link( $text, $class = NULL, $prefix = NULL, $postfix = NULL )
-  {
-    $re = '#((?:https?|ftps?)://[0-9a-zA-Z\.\-\_]+(/\S*)?)#msi';
-
-    if ( $class ) {
-      $class = " class=\"$class\"";
+    static function isValidEmail($email)
+    {
+        return self::checkEmail($email);
     }
 
-    $text = preg_replace( $re, '<a href="$1"' . $class . '>' . $prefix . '$1' . $postfix . '</a>', $text );
-
-    return $text;
-  }
-
-  // Translit for Cyrillic
-  static function translit( $stroka )
-  {
-    $converter = array(
-      'а' => 'a', 'б' => 'b', 'в' => 'v',
-      'г' => 'g', 'д' => 'd', 'е' => 'e',
-      'ё' => 'e', 'ж' => 'zh', 'з' => 'z',
-      'и' => 'i', 'й' => 'y', 'к' => 'k',
-      'л' => 'l', 'м' => 'm', 'н' => 'n',
-      'о' => 'o', 'п' => 'p', 'р' => 'r',
-      'с' => 's', 'т' => 't', 'у' => 'u',
-      'ф' => 'f', 'х' => 'h', 'ц' => 'c',
-      'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch',
-      'ь' => "'", 'ы' => 'y', 'ъ' => "'",
-      'э' => 'e', 'ю' => 'yu', 'я' => 'ya',
-      'А' => 'A', 'Б' => 'B', 'В' => 'V',
-      'Г' => 'G', 'Д' => 'D', 'Е' => 'E',
-      'Ё' => 'E', 'Ж' => 'Zh', 'З' => 'Z',
-      'И' => 'I', 'Й' => 'Y', 'К' => 'K',
-      'Л' => 'L', 'М' => 'M', 'Н' => 'N',
-      'О' => 'O', 'П' => 'P', 'Р' => 'R',
-      'С' => 'S', 'Т' => 'T', 'У' => 'U',
-      'Ф' => 'F', 'Х' => 'H', 'Ц' => 'C',
-      'Ч' => 'Ch', 'Ш' => 'Sh', 'Щ' => 'Sch',
-      'Ь' => "'", 'Ы' => 'Y', 'Ъ' => "'",
-      'Э' => 'E', 'Ю' => 'Yu', 'Я' => 'Ya',
-    );
-
-    return strtr( $stroka, $converter );
-  }
-
-  static function urlTranslit( $title, $end = NULL )
-  {
-    if ( !preg_match( '/[^A-Za-z0-9_\-]/', $title ) ) {
-      return $title;
+    // Converters
+    static function only09az($str)
+    {
+        return preg_replace('#([^0-9A-Za-z])#s', '', $str);
     }
 
-    $title   = trim( $title );
-    $matches = [];
+    // Object to Array
+    static function object2array($object)
+    {
+        $json = json_encode($object);
 
-    // if text contains few sentences, take first sentence.
-    if ( preg_match( '#^\.?([^\.]*)#ui', $title, $matches ) && mb_strlen( $matches[1] ) > 5 ) {
-      $title = $matches[1];
+        if (FALSE === $json) {
+            return FALSE;
+        }
+
+        return json_decode($json, TRUE);
     }
 
-    $title = self::translit( $title );
-    $title = str_ireplace( array( '-', ' ' ), '_', $title );
-    $title = preg_replace( "#[^A-Za-z0-9_\-]#ui", '', $title );
-
-    if ( $end ) {
-      $title .= "-" . self::urlTranslit( $end );
+    static function objectToArray($object)
+    {
+        return object2array($object);
     }
 
-    return $title;
-  }
-
-  // convert number to qwerty code
-  static function q36encode( $A, $q = '' )
-  {
-    if ( !is_numeric( $A ) ) {
-      $A = 0;
+    // XML to Array
+    static function xml2array($xml)
+    {
+        $xml = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        return self::object2array($xml);
     }
 
-    $qwerty = array( 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a',
-      's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '1', '2', '3', '4', '5', '6',
-      '7', '8', '9', '0', 'z', 'x', 'c', 'v', 'b', 'n', 'm' );
-
-    if ( $A < 36 ) {
-      $q = $qwerty[$A] . $q;
-      return $q;
+    static function xmlToArray($xml)
+    {
+        return xml2array($xml);
     }
 
-    $Q = floor( $A / 36 );
-    $q = $qwerty[$A - $Q * 36] . $q;
+    // Convert link in text into hyperlink
+    static function url2link($text, $class = NULL, $prefix = NULL, $postfix = NULL)
+    {
+        $re = '#((?:https?|ftps?)://[0-9a-zA-Z\.\-\_]+(/\S*)?)#msi';
 
-    return self::q36encode( $Q, $q );
-  }
+        if ($class) {
+            $class = " class=\"$class\"";
+        }
 
-  // convert qwerty code to number
-  static function q36decode( $code )
-  {
-    $qwerty = array( 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a',
-      's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '1', '2', '3', '4', '5', '6',
-      '7', '8', '9', '0', 'z', 'x', 'c', 'v', 'b', 'n', 'm' );
+        $text = preg_replace($re, '<a href="$1"' . $class . '>' . $prefix . '$1' . $postfix . '</a>', $text);
 
-    $number = 0;
-    $code   = preg_replace( "#([^0-9A-z])#Usi", '', $code );
-    $length = strlen( $code ) - 1;
-
-    if ( $length < 0 ) {
-      return 0;
+        return $text;
     }
 
-    $code = preg_split( '//', $code, -1, PREG_SPLIT_NO_EMPTY );
+    // Translit for Cyrillic
+    static function translit($stroka)
+    {
+        $converter = array(
+            'а' => 'a', 'б' => 'b', 'в' => 'v',
+            'г' => 'g', 'д' => 'd', 'е' => 'e',
+            'ё' => 'e', 'ж' => 'zh', 'з' => 'z',
+            'и' => 'i', 'й' => 'y', 'к' => 'k',
+            'л' => 'l', 'м' => 'm', 'н' => 'n',
+            'о' => 'o', 'п' => 'p', 'р' => 'r',
+            'с' => 's', 'т' => 't', 'у' => 'u',
+            'ф' => 'f', 'х' => 'h', 'ц' => 'c',
+            'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch',
+            'ь' => "'", 'ы' => 'y', 'ъ' => "'",
+            'э' => 'e', 'ю' => 'yu', 'я' => 'ya',
+            'А' => 'A', 'Б' => 'B', 'В' => 'V',
+            'Г' => 'G', 'Д' => 'D', 'Е' => 'E',
+            'Ё' => 'E', 'Ж' => 'Zh', 'З' => 'Z',
+            'И' => 'I', 'Й' => 'Y', 'К' => 'K',
+            'Л' => 'L', 'М' => 'M', 'Н' => 'N',
+            'О' => 'O', 'П' => 'P', 'Р' => 'R',
+            'С' => 'S', 'Т' => 'T', 'У' => 'U',
+            'Ф' => 'F', 'Х' => 'H', 'Ц' => 'C',
+            'Ч' => 'Ch', 'Ш' => 'Sh', 'Щ' => 'Sch',
+            'Ь' => "'", 'Ы' => 'Y', 'Ъ' => "'",
+            'Э' => 'E', 'Ю' => 'Yu', 'Я' => 'Ya',
+        );
 
-    for ( $i = 0; $i < $length; $i++ ) {
-      $number += array_search( $code[$i], $qwerty ) * pow( 36, $length - $i );
+        return strtr($stroka, $converter);
     }
 
-    $number += array_search( $code[$length], $qwerty );
+    static function urlTranslit($title, $end = NULL)
+    {
+        if (!preg_match('/[^A-Za-z0-9_\-]/', $title)) {
+            return $title;
+        }
 
-    return $number;
-  }
+        $title   = trim($title);
+        $matches = [];
 
-  // OUTPUT
-  static function trace( $arr, $display = true )
-  {
-    $arr = print_r( $arr, true );
+        // if text contains few sentences, take first sentence.
+        if (preg_match('#^\.?([^\.]*)#ui', $title, $matches) && mb_strlen($matches[1]) > 5) {
+            $title = $matches[1];
+        }
 
-    if ( $display ) {
-      echo '<pre>' . $arr . '</pre>';
+        $title = self::translit($title);
+        $title = str_ireplace(array('-', ' '), '_', $title);
+        $title = preg_replace("#[^A-Za-z0-9_\-]#ui", '', $title);
+
+        if ($end) {
+            $title .= "-" . self::urlTranslit($end);
+        }
+
+        return $title;
     }
 
-    return $arr;
-  }
+    // convert number to qwerty code
+    static function q36encode($A, $q = '')
+    {
+        if (!is_numeric($A)) {
+            $A = 0;
+        }
 
-  /**
-   * Return unicode char by its code
-   *
-   * @param int $u
-   * @return char
-   */
-  static function mbChr( $u )
-  {
-    return mb_convert_encoding( '&#' . intval( $u ) . ';', 'UTF-8', 'HTML-ENTITIES' );
-  }
+        $qwerty = array('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a',
+            's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '1', '2', '3', '4', '5', '6',
+            '7', '8', '9', '0', 'z', 'x', 'c', 'v', 'b', 'n', 'm');
 
-  /**
-   * Return code by it's unicode char
-   *
-   * @param char $char
-   * @return int
-   */
-  static function mbOrd( $char )
-  {
-    return hexdec( bin2hex( $char ) );
-  }
+        if ($A < 36) {
+            $q = $qwerty[$A] . $q;
+            return $q;
+        }
 
-  /**
-   * Return trimed string for unicode
-   *
-   */
-  static function mbTrim( $str )
-  {
-    return preg_replace( '#(^\s+|\s+$)#us', '', $str );
-  }
+        $Q = floor($A / 36);
+        $q = $qwerty[$A - $Q * 36] . $q;
 
-  // output in JSON
-  static function echoJSON( $data, $exit = TRUE )
-  {
-    header( 'Content-type: application/json' );
-    $data = json_encode( $data );
-
-    if ( $exit ) {
-      exit( $data );
+        return self::q36encode($Q, $q);
     }
 
-    echo $data;
-  }
+    // convert qwerty code to number
+    static function q36decode($code)
+    {
+        $qwerty = array('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a',
+            's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '1', '2', '3', '4', '5', '6',
+            '7', '8', '9', '0', 'z', 'x', 'c', 'v', 'b', 'n', 'm');
 
-  // output in TEXT
-  static function echoText( $data, $exit = TRUE )
-  {
-    header( 'Content-type: text/plain' );
+        $number = 0;
+        $code   = preg_replace("#([^0-9A-z])#Usi", '', $code);
+        $length = strlen($code) - 1;
 
-    if ( $exit ) {
-      exit( $data );
+        if ($length < 0) {
+            return 0;
+        }
+
+        $code = preg_split('//', $code, -1, PREG_SPLIT_NO_EMPTY);
+
+        for ($i = 0; $i < $length; $i++) {
+            $number += array_search($code[$i], $qwerty) * pow(36, $length - $i);
+        }
+
+        $number += array_search($code[$length], $qwerty);
+
+        return $number;
     }
 
-    echo $data;
-  }
+    // OUTPUT
+    static function trace($arr, $display = true)
+    {
+        $arr = print_r($arr, true);
 
-  // ACTIONS
-  static function sendMail( $from, $to, $subject, $body )
-  {
-    $headers = "From: {$from}\n"
-      . "Reply-to: {$from}\n"
-      . "Return-Path: {$from}\n"
-      . "Message-ID: <" . md5( uniqid( time() ) ) . '@' . $_SERVER['SERVER_NAME'] . ">\n"
-      . "MIME-Version: 1.0\n"
-      . "Date: " . date( 'r', time() ) . "\n";
+        if ($display) {
+            echo '<pre>' . $arr . '</pre>';
+        }
 
-    mail( $to, $subject, $body, $headers );
-  }
-
-  static function redirect( $url = '/', $permanent = FALSE )
-  {
-    if ( $permanent ) {
-      header( 'HTTP/1.1 301 Moved Permanently' );
+        return $arr;
     }
 
-    header( 'Location: ' . $url, FALSE );
-    exit;
-  }
-
-  static function redirect404( $page = NULL )
-  {
-    header( 'HTTP/1.1 404 Not Found' );
-
-    if ( $page ) {
-      self::redirect( $page );
+    /**
+     * Return unicode char by its code
+     *
+     * @param int $u
+     * @return char
+     */
+    static function mbChr($u)
+    {
+        return mb_convert_encoding('&#' . intval($u) . ';', 'UTF-8', 'HTML-ENTITIES');
     }
 
-    exit;
-  }
-
-  // create Cookie
-  static function createCookie( $nameCook, $value, $period )
-  {
-    $host = $_SERVER['HTTP_HOST'];
-
-    if ( $_SERVER['HTTP_X_FORWARDED_HOST'] ) {
-      $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+    /**
+     * Return code by it's unicode char
+     *
+     * @param char $char
+     * @return int
+     */
+    static function mbOrd($char)
+    {
+        return hexdec(bin2hex($char));
     }
 
-    $matches = array();
-    $host    = str_ireplace( 'www.', '', $host );
-
-    preg_match_all( '#(\.)#', $host, $matches );
-
-    if ( 1 == count( $matches[1] ) ) {
-      $host = '.' . $host;
+    /**
+     * Return trimed string for unicode
+     *
+     */
+    static function mbTrim($str)
+    {
+        return preg_replace('#(^\s+|\s+$)#us', '', $str);
     }
 
-    setcookie( $nameCook, $value, time() + $period, '/', $host );
-    $_COOKIE[$nameCook] = $value;
-  }
+    // output in JSON
+    static function echoJSON($data, $exit = TRUE)
+    {
+        header('Content-type: application/json');
+        $data = json_encode($data);
 
-  // delete Cookie
-  static function deleteCookie( $nameCook )
-  {
-    unset( $_COOKIE[$nameCook] );
+        if ($exit) {
+            exit($data);
+        }
 
-    $host = $_SERVER['HTTP_HOST'];
-
-    if ( $_SERVER['HTTP_X_FORWARDED_HOST'] ) {
-      $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+        echo $data;
     }
 
-    setcookie( $nameCook, sha1( date( 'r' ) ), time() - 3600 * 24 * 14, '/', $host );
-  }
+    // output in TEXT
+    static function echoText($data, $exit = TRUE)
+    {
+        header('Content-type: text/plain');
 
-  // cut text
-  static function textSubstr( $text, $maxlen, $ost = '...' )
-  {
-    $text = trim( $text );
-    $len  = mb_strlen( $text, 'UTF-8' );
+        if ($exit) {
+            exit($data);
+        }
 
-    if ( $len <= $maxlen ) {
-      $ost = '';
+        echo $data;
     }
 
-    $text = mb_substr( $text, 0, $maxlen, 'UTF-8' ) . $ost;
-    return $text;
-  }
+    // ACTIONS
+    static function sendMail($from, $to, $subject, $body)
+    {
+        $headers = "From: {$from}\n"
+            . "Reply-to: {$from}\n"
+            . "Return-Path: {$from}\n"
+            . "Message-ID: <" . md5(uniqid(time())) . '@' . $_SERVER['SERVER_NAME'] . ">\n"
+            . "MIME-Version: 1.0\n"
+            . "Date: " . date('r', time()) . "\n";
 
-  // cut HTML text
-  static function htmlSubstr( $html, $maxlen, $ost = '...' )
-  {
-    $html = trim( $html );
-    $len  = mb_strlen( $html, 'UTF-8' );
-
-    if ( $len <= $maxlen ) {
-      $ost = '';
+        mail($to, $subject, $body, $headers);
     }
 
-    $html = mb_substr( $html, 0, $maxlen, 'UTF-8' );
-    $html = preg_replace( '#</?$#uU', '', $html ) . $ost;
+    static function redirect($url = '/', $permanent = FALSE)
+    {
+        if ($permanent) {
+            header('HTTP/1.1 301 Moved Permanently');
+        }
 
-    return self::html_repair( $html );
-  }
-
-  // repair HTML text
-  static function htmlRepair( $html )
-  {
-    $html = "<html>{$html}</html>";
-
-    $config = array( 'show-body-only' => TRUE, 'output-html' => TRUE );
-    $tidy   = tidy_parse_string( $html, $config, 'UTF8' );
-
-    $tidy->cleanRepair();
-
-    $html = $tidy->value;
-    return $html;
-  }
-
-  // unique row in 41 symbols (32 symbols if $sha1=FALSE)
-  static function idhash( $secret = '', $sha1 = TRUE )
-  {
-    $secret .= date( 'r' ) . uniqid( strval( mt_rand() ), TRUE );
-
-    if ( $sha1 ) {
-      return sha1( $secret );
+        header('Location: ' . $url, FALSE);
+        exit;
     }
 
-    return md5( $secret );
-  }
+    static function redirect404($page = NULL)
+    {
+        header('HTTP/1.1 404 Not Found');
 
-  public static function GUID()
-  {
-    if ( function_exists( 'com_create_guid' ) ) {
-      return com_create_guid();
+        if ($page) {
+            self::redirect($page);
+        }
+
+        exit;
     }
 
-    mt_srand( (double) microtime() * 10000 );
+    // create Cookie
+    static function createCookie($nameCook, $value, $period)
+    {
+        $host = $_SERVER['HTTP_HOST'];
 
-    $charid = strtoupper( md5( uniqid( strval( mt_rand() ), TRUE ) ) );
-    $hyphen = chr( 45 ); // "-"
-    $uuid   = substr( $charid, 0, 8 ) . $hyphen
-      . substr( $charid, 8, 4 ) . $hyphen
-      . substr( $charid, 12, 4 ) . $hyphen
-      . substr( $charid, 16, 4 ) . $hyphen
-      . substr( $charid, 20, 12 );
+        if ($_SERVER['HTTP_X_FORWARDED_HOST']) {
+            $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+        }
 
-    return $uuid;
-  }
+        $matches = array();
+        $host    = str_ireplace('www.', '', $host);
 
-  public static function UUID()
-  {
-    return self::GUID();
-  }
+        preg_match_all('#(\.)#', $host, $matches);
 
-  public static function randomHash( int $length )
-  {
-    if ( $length < 1 ) {
-      return NULL;
+        if (1 == count($matches[1])) {
+            $host = '.' . $host;
+        }
+
+        setcookie($nameCook, $value, time() + $period, '/', $host);
+        $_COOKIE[$nameCook] = $value;
     }
 
-    $n    = $length % 32 + 1;
-    $hash = '';
+    // delete Cookie
+    static function deleteCookie($nameCook)
+    {
+        unset($_COOKIE[$nameCook]);
 
-    for ( $i = 0; $i < $n; $i++ ) {
-      $hash .= self::idhash( '', FALSE );
+        $host = $_SERVER['HTTP_HOST'];
+
+        if ($_SERVER['HTTP_X_FORWARDED_HOST']) {
+            $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+        }
+
+        setcookie($nameCook, sha1(date('r')), time() - 3600 * 24 * 14, '/', $host);
     }
 
-    return substr( $hash, 0, $length );
-  }
+    // cut text
+    static function textSubstr($text, $maxlen, $ost = '...')
+    {
+        $text = trim($text);
+        $len  = mb_strlen($text, 'UTF-8');
 
-  static function passwordGenerator( $length = 8, $any_symbols = TRUE )
-  {
-    if ( !$any_symbols ) {
-      $password = self::idhash( NULL, TRUE );
-      $password = substr( $password, 0, $length );
-      return $password;
+        if ($len <= $maxlen) {
+            $ost = '';
+        }
+
+        $text = mb_substr($text, 0, $maxlen, 'UTF-8') . $ost;
+        return $text;
     }
 
-    $chars        = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?';
-    $password     = str_shuffle( $chars );
-    $chars_length = strlen( $chars );
-    $buffer       = '';
+    // cut HTML text
+    static function htmlSubstr($html, $maxlen, $ost = '...')
+    {
+        $html = trim($html);
+        $len  = mb_strlen($html, 'UTF-8');
 
-    for ( $i = 0; $i < $length; $i++ ) {
-      $n      = rand( 1, $chars_length ) - 1;
-      $buffer .= $chars[$n];
+        if ($len <= $maxlen) {
+            $ost = '';
+        }
+
+        $html = mb_substr($html, 0, $maxlen, 'UTF-8');
+        $html = preg_replace('#</?$#uU', '', $html) . $ost;
+
+        return self::html_repair($html);
     }
 
-    return $buffer;
-  }
+    // repair HTML text
+    static function htmlRepair($html)
+    {
+        $html = "<html>{$html}</html>";
 
-  // age of file in seconds
-  static function ageFile( $filename )
-  {
-    if ( !file_exists( $filename ) ) {
-      return FALSE;
+        $config = array('show-body-only' => TRUE, 'output-html' => TRUE);
+        $tidy   = tidy_parse_string($html, $config, 'UTF8');
+
+        $tidy->cleanRepair();
+
+        $html = $tidy->value;
+        return $html;
     }
 
-    $age = time() - filectime( $filename );
-    return $age;
-  }
+    // unique row in 41 symbols (32 symbols if $sha1=FALSE)
+    static function idhash($secret = '', $sha1 = TRUE)
+    {
+        $secret .= date('r') . uniqid(strval(mt_rand()), TRUE);
 
-  static function filectime( $filename )
-  {
-    $filetime = NULL;
+        if ($sha1) {
+            return sha1($secret);
+        }
 
-    if ( file_exists( $filename ) ) {
-      $filetime = filectime( $filename );
+        return md5($secret);
     }
 
-    return $filetime;
-  }
+    public static function GUID()
+    {
+        if (function_exists('com_create_guid')) {
+            return com_create_guid();
+        }
 
-  static function deleteFile( $filename )
-  {
-    if ( !file_exists( $filename ) ) {
-      return FALSE;
+        mt_srand((double) microtime() * 10000);
+
+        $charid = strtoupper(md5(uniqid(strval(mt_rand()), TRUE)));
+        $hyphen = chr(45); // "-"
+        $uuid   = substr($charid, 0, 8) . $hyphen
+            . substr($charid, 8, 4) . $hyphen
+            . substr($charid, 12, 4) . $hyphen
+            . substr($charid, 16, 4) . $hyphen
+            . substr($charid, 20, 12);
+
+        return $uuid;
     }
 
-    unlink( $filename );
-    return TRUE;
-  }
-
-  // my host http://www.domain.com
-  static function myHost()
-  {
-    $host = 'http';
-
-    if ( $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off' ) {
-      $host .= 's';
+    public static function UUID()
+    {
+        return self::GUID();
     }
 
-    $host .= '://' . $_SERVER['HTTP_HOST'];
-    return $host;
-  }
+    public static function randomHash(int $length)
+    {
+        if ($length < 1) {
+            return NULL;
+        }
 
-  // maxExecutionTime into UNLIMITED
-  static function phpExecutionTimeUnlimited()
-  {
-    set_time_limit( 0 );
-  }
+        $n    = $length % 32 + 1;
+        $hash = '';
 
-  // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
-  static function timeAgo( $date, $granularity = 2 )
-  {
-    if ( is_string( $date ) ) {
-      $date = strtotime( $date );
+        for ($i = 0; $i < $n; $i++) {
+            $hash .= self::idhash('', FALSE);
+        }
+
+        return substr($hash, 0, $length);
     }
 
-    $difference = time() - $date;
+    static function passwordGenerator($length = 8, $any_symbols = TRUE)
+    {
+        if (!$any_symbols) {
+            $password = self::idhash(NULL, TRUE);
+            $password = substr($password, 0, $length);
+            return $password;
+        }
 
-    $periods = array(
-      'decade' => 315360000,
-      'year'   => 31536000,
-      'month'  => 2628000,
-      'week'   => 604800,
-      'day'    => 86400,
-      'hour'   => 3600,
-      'minute' => 60,
-      'second' => 1
-    );
+        $chars        = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?';
+        $password     = str_shuffle($chars);
+        $chars_length = strlen($chars);
+        $buffer       = '';
 
-    foreach ( $periods as $key => $value ) {
-      if ( $difference >= $value ) {
-        $time       = floor( $difference / $value );
-        $difference %= $value;
-        $retval     .= ($retval ? ' ' : '') . $time . ' ';
-        $retval     .= (($time > 1) ? $key . 's' : $key);
-        $granularity--;
-      }
+        for ($i = 0; $i < $length; $i++) {
+            $n      = rand(1, $chars_length) - 1;
+            $buffer .= $chars[$n];
+        }
 
-      if ( '0' == $granularity ) {
-        break;
-      }
+        return $buffer;
     }
 
-    return ' posted ' . $retval . ' ago';
-  }
+    // age of file in seconds
+    static function ageFile($filename)
+    {
+        if (!file_exists($filename)) {
+            return FALSE;
+        }
 
-  static function headerNoCache()
-  {
-    header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
-    header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
-    header( 'Cache-Control: post-check=0, pre-check=0', FALSE );
-    header( 'Pragma: no-cache' );
-  }
-
-  // Function to get the client IP address
-  static function getClientIp()
-  {
-    if ( $_SERVER['HTTP_CLIENT_IP'] ) {
-      return $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        $age = time() - filectime($filename);
+        return $age;
     }
 
-    if ( $_SERVER['HTTP_X_FORWARDED_FOR'] ) {
-      return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    static function filectime($filename)
+    {
+        $filetime = NULL;
+
+        if (file_exists($filename)) {
+            $filetime = filectime($filename);
+        }
+
+        return $filetime;
     }
 
-    if ( $_SERVER['HTTP_X_FORWARDED'] ) {
-      return $_SERVER['HTTP_X_FORWARDED'];
+    static function deleteFile($filename)
+    {
+        if (!file_exists($filename)) {
+            return FALSE;
+        }
+
+        unlink($filename);
+        return TRUE;
     }
 
-    if ( $_SERVER['HTTP_FORWARDED_FOR'] ) {
-      return $_SERVER['HTTP_FORWARDED_FOR'];
+    // my host http://www.domain.com
+    static function myHost()
+    {
+        $host = 'http';
+
+        if ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') {
+            $host .= 's';
+        }
+
+        $host .= '://' . $_SERVER['HTTP_HOST'];
+        return $host;
     }
 
-    if ( $_SERVER['HTTP_FORWARDED'] ) {
-      return $_SERVER['HTTP_FORWARDED'];
+    // maxExecutionTime into UNLIMITED
+    static function phpExecutionTimeUnlimited()
+    {
+        set_time_limit(0);
     }
 
-    if ( $_SERVER['REMOTE_ADDR'] ) {
-      return $_SERVER['REMOTE_ADDR'];
+    // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
+    static function timeAgo($date, $granularity = 2)
+    {
+        if (is_string($date)) {
+            $date = strtotime($date);
+        }
+
+        $difference = time() - $date;
+
+        $periods = array(
+            'decade' => 315360000,
+            'year'   => 31536000,
+            'month'  => 2628000,
+            'week'   => 604800,
+            'day'    => 86400,
+            'hour'   => 3600,
+            'minute' => 60,
+            'second' => 1
+        );
+
+        foreach ($periods as $key => $value) {
+            if ($difference >= $value) {
+                $time       = floor($difference / $value);
+                $difference %= $value;
+                $retval     .= ($retval ? ' ' : '') . $time . ' ';
+                $retval     .= (($time > 1) ? $key . 's' : $key);
+                $granularity--;
+            }
+
+            if ('0' == $granularity) {
+                break;
+            }
+        }
+
+        return ' posted ' . $retval . ' ago';
     }
 
-    return NULL;
-  }
-
-  public static function dateMysqlToUnix( $mysqldate )
-  {
-    if ( is_numeric( $mysqldate ) ) {
-      return $mysqldate;
+    static function headerNoCache()
+    {
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Cache-Control: post-check=0, pre-check=0', FALSE);
+        header('Pragma: no-cache');
     }
 
-    return strtotime( $mysqldate );
-  }
+    // Function to get the client IP address
+    static function getClientIp()
+    {
+        if ($_SERVER['HTTP_CLIENT_IP']) {
+            return $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        }
 
-  public static function dateUnixToMysql( $unixdate )
-  {
-    if ( !$unixdate ) {
-      $unixdate = time();
+        if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
+            return $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+
+        if ($_SERVER['HTTP_X_FORWARDED']) {
+            return $_SERVER['HTTP_X_FORWARDED'];
+        }
+
+        if ($_SERVER['HTTP_FORWARDED_FOR']) {
+            return $_SERVER['HTTP_FORWARDED_FOR'];
+        }
+
+        if ($_SERVER['HTTP_FORWARDED']) {
+            return $_SERVER['HTTP_FORWARDED'];
+        }
+
+        if ($_SERVER['REMOTE_ADDR']) {
+            return $_SERVER['REMOTE_ADDR'];
+        }
+
+        return NULL;
     }
 
-    if ( !is_numeric( $unixdate ) ) {
-      return $unixdate;
+    public static function dateMysqlToUnix($mysqldate)
+    {
+        if (is_numeric($mysqldate)) {
+            return $mysqldate;
+        }
+
+        return strtotime($mysqldate);
     }
 
-    return date( 'Y-m-d H:i:s', $unixdate );
-  }
+    public static function dateUnixToMysql($unixdate)
+    {
+        if (!$unixdate) {
+            $unixdate = time();
+        }
 
-  function timeElapsedString( $datetime, $full = FALSE )
-  {
-    $now  = new DateTime;
-    $ago  = new DateTime( $datetime );
-    $diff = $now->diff( $ago );
+        if (!is_numeric($unixdate)) {
+            return $unixdate;
+        }
 
-    $diff->w = floor( $diff->d / 7 );
-    $diff->d -= $diff->w * 7;
-
-    $string = [
-      'y' => 'year',
-      'm' => 'month',
-      'w' => 'week',
-      'd' => 'day',
-      'h' => 'hour',
-      'i' => 'minute',
-      's' => 'second',
-    ];
-
-    foreach ( $string as $k => &$v ) {
-      if ( $diff->$k ) {
-        $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
-        continue;
-      }
-
-      unset( $string[$k] );
+        return date('Y-m-d H:i:s', $unixdate);
     }
 
-    if ( !$full ) {
-      $string = array_slice( $string, 0, 1 );
+    function timeElapsedString($datetime, $full = FALSE)
+    {
+        $now  = new DateTime;
+        $ago  = new DateTime($datetime);
+        $diff = $now->diff($ago);
+
+        $diff->w = floor($diff->d / 7);
+        $diff->d -= $diff->w * 7;
+
+        $string = [
+            'y' => 'year',
+            'm' => 'month',
+            'w' => 'week',
+            'd' => 'day',
+            'h' => 'hour',
+            'i' => 'minute',
+            's' => 'second',
+        ];
+
+        foreach ($string as $k => &$v) {
+            if ($diff->$k) {
+                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+                continue;
+            }
+
+            unset($string[$k]);
+        }
+
+        if (!$full) {
+            $string = array_slice($string, 0, 1);
+        }
+
+        if (!$string) {
+            return 'just now';
+        }
+
+        return implode(', ', $string) . ' ago';
     }
 
-    if ( !$string ) {
-      return 'just now';
+    // ONLY FOR RUSSIAN LANGUAGE
+    public static function niceNumber($number, $russian = TRUE)
+    {
+        // first strip any formatting;
+        $number = ( 0 + str_replace(',', '', $number) );
+
+        // is this a number?
+        if (!is_numeric($number)) {
+            return FALSE;
+        }
+
+        $words = array(
+            'trillion' => 'триллионов',
+            'billion'  => 'миллиардов',
+            'million'  => 'миллионов',
+            'thousand' => 'тысяч'
+        );
+
+        // now filter it;
+        if ($number > 1000000000000) {
+            $nice_word = 'trillion';
+
+            if ($russian) {
+                $nice_word = $words[$nice_word];
+            }
+
+            return round(( $number / 1000000000000), 2) . ' ' . $nice_word;
+        }
+
+        if ($number > 1000000000) {
+            $nice_word = 'billion';
+
+            if ($russian) {
+                $nice_word = $words[$nice_word];
+            }
+
+            return round(( $number / 1000000000), 2) . ' ' . $nice_word;
+        }
+
+        if ($number > 1000000) {
+            $nice_word = 'million';
+
+            if ($russian) {
+                $nice_word = $words[$nice_word];
+            }
+
+            return round(( $number / 1000000), 2) . ' ' . $nice_word;
+        }
+
+        if ($number > 1000) {
+            $nice_word = 'thousand';
+
+            if ($russian) {
+                $nice_word = $words[$nice_word];
+            }
+
+            return round(( $number / 1000), 2) . ' ' . $nice_word;
+        }
+
+        return number_format($number);
     }
 
-    return implode( ', ', $string ) . ' ago';
-  }
-
-  // ONLY FOR RUSSIAN LANGUAGE
-  public static function niceNumber( $number, $russian = TRUE )
-  {
-    // first strip any formatting;
-    $number = ( 0 + str_replace( ',', '', $number ) );
-
-    // is this a number?
-    if ( !is_numeric( $number ) ) {
-      return FALSE;
+    public static function clearIP($ip)
+    {
+        return preg_replace('/[^\.\d]/', '', $ip);
     }
 
-    $words = array(
-      'trillion' => 'триллионов',
-      'billion'  => 'миллиардов',
-      'million'  => 'миллионов',
-      'thousand' => 'тысяч'
-    );
+    public static function clearCache($pattern, $age)
+    {
+        $files = glob($pattern);
 
-    // now filter it;
-    if ( $number > 1000000000000 ) {
-      $nice_word = 'trillion';
+        if (!$files) {
+            return;
+        }
 
-      if ( $russian ) {
-        $nice_word = $words[$nice_word];
-      }
-
-      return round( ( $number / 1000000000000 ), 2 ) . ' ' . $nice_word;
+        foreach ($files as $filename) {
+            if (self::ageFile($filename) >= $age) {
+                unlink($filename);
+            }
+        }
     }
 
-    if ( $number > 1000000000 ) {
-      $nice_word = 'billion';
+    public static function in_array($needle, $array, $all = true)
+    {
+        if (!is_array($needle)) {
+            return in_array($needle, $array);
+        }
 
-      if ( $russian ) {
-        $nice_word = $words[$nice_word];
-      }
+        if (!$all) {
+            foreach ($needle as $item) {
+                if (in_array($item, $array)) {
+                    return true;
+                }
+            }
 
-      return round( ( $number / 1000000000 ), 2 ) . ' ' . $nice_word;
+            return false;
+        }
+
+        foreach ($needle as $item) {
+            if (!in_array($item, $array)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    if ( $number > 1000000 ) {
-      $nice_word = 'million';
+    public static function timeDelta(int $time, int $delta = null)
+    {
+        $dif = time() - $time;
 
-      if ( $russian ) {
-        $nice_word = $words[$nice_word];
-      }
+        if (!$delta) {
+            return $dif;
+        }
 
-      return round( ( $number / 1000000 ), 2 ) . ' ' . $nice_word;
+        return ($delta < $dif);
     }
 
-    if ( $number > 1000 ) {
-      $nice_word = 'thousand';
-
-      if ( $russian ) {
-        $nice_word = $words[$nice_word];
-      }
-
-      return round( ( $number / 1000 ), 2 ) . ' ' . $nice_word;
+    public static function isAjax()
+    {
+        return (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+                && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
     }
 
-    return number_format( $number );
-  }
-
-  public static function clearIP( $ip )
-  {
-    return preg_replace( '/[^\.\d]/', '', $ip );
-  }
-
-  public static function clearCache( $pattern, $age )
-  {
-    $files = glob( $pattern );
-
-    if ( !$files ) {
-      return;
-    }
-
-    foreach ( $files as $filename ) {
-      if ( self::ageFile( $filename ) >= $age ) {
-        unlink( $filename );
-      }
-    }
-  }
-  
-  public static function in_array($needle, $array, $all=true)
-  {
-      if( !is_array($needle) ) {
-          return in_array($needle, $array);
-      }
-      
-      if(!$all) {
-          foreach ( $needle as $item ) {
-              if(in_array($item, $array) ) {
-                  return true;
-              }
-          }
-          
-          return false;
-      }
-      
-      foreach ( $needle as $item ) {
-          if( !in_array($item, $array) ) {
-              return false;
-          }
-      }
-      
-      return true;
-  }
-
-  public static function timeDelta(int $time, int $delta=null)
-  {
-      $dif  = time() - $time;
-      
-      if(!$delta) {
-        return $dif;
-      }
-      
-      return ($delta < $dif);
-  }
 }
