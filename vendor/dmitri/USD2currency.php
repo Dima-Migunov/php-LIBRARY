@@ -5,7 +5,7 @@ namespace vendor\dmitri;
 class USD2Currency
 {
 
-    private $cache      = false;
+    private $cache      = true;
     private $cachetime  = 12; // in hours
     private $cachefile  = 'currencies.txt';
     private $data;
@@ -23,7 +23,17 @@ class USD2Currency
             $this->cachefile    = $cachefile;
         }
     }
-    
+
+    public function disableCache()
+    {
+        $this->cache    = false;
+    }
+
+    public function enableCache()
+    {
+        $this->cache    = true;
+    }
+
     public function get($cur='EUR', $amount=1)
     {
         $this->listing();
