@@ -22,6 +22,10 @@ class USD2Currency
         if($cachefile) {
             $this->cachefile    = $cachefile;
         }
+        
+        if($this->cache) {
+            $this->getNewCurrencies();
+        }
     }
 
     public function disableCache()
